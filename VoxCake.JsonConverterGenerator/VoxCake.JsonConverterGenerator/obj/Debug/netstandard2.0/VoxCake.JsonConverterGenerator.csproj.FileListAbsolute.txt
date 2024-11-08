@@ -1,0 +1,10 @@
+C:\github\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\bin\Debug\netstandard2.0\VoxCake.JsonConverterGenerator.deps.json
+C:\github\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\bin\Debug\netstandard2.0\VoxCake.JsonConverterGenerator.dll
+C:\github\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\bin\Debug\netstandard2.0\VoxCake.JsonConverterGenerator.pdb
+C:\github\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\obj\Debug\netstandard2.0\VoxCake.JsonConverterGenerator.csproj.AssemblyReference.cache
+C:\github\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\obj\Debug\netstandard2.0\VoxCake.JsonConverterGenerator.GeneratedMSBuildEditorConfig.editorconfig
+C:\github\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\obj\Debug\netstandard2.0\VoxCake.JsonConverterGenerator.AssemblyInfoInputs.cache
+C:\github\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\obj\Debug\netstandard2.0\VoxCake.JsonConverterGenerator.AssemblyInfo.cs
+C:\github\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\obj\Debug\netstandard2.0\VoxCake.JsonConverterGenerator.csproj.CoreCompileInputs.cache
+C:\github\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\obj\Debug\netstandard2.0\VoxCake.JsonConverterGenerator.dll
+C:\github\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\obj\Debug\netstandard2.0\VoxCake.JsonConverterGenerator.pdb

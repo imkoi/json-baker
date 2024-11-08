@@ -1,0 +1,17 @@
+C:\github\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator.Sample\bin\Debug\net6.0\VoxCake.JsonConverterGenerator.Sample.deps.json
+C:\github\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator.Sample\bin\Debug\net6.0\VoxCake.JsonConverterGenerator.Sample.dll
+C:\github\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator.Sample\bin\Debug\net6.0\VoxCake.JsonConverterGenerator.Sample.pdb
+C:\github\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator.Sample\obj\Debug\net6.0\VoxCake.JsonConverterGenerator.Sample.GeneratedMSBuildEditorConfig.editorconfig
+C:\github\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator.Sample\obj\Debug\net6.0\VoxCake.JsonConverterGenerator.Sample.AssemblyInfoInputs.cache
+C:\github\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator.Sample\obj\Debug\net6.0\VoxCake.JsonConverterGenerator.Sample.AssemblyInfo.cs
+C:\github\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator.Sample\obj\Debug\net6.0\VoxCake.JsonConverterGenerator.Sample.csproj.CoreCompileInputs.cache
+C:\github\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator.Sample\obj\Debug\net6.0\VoxCake.JsonConverterGenerator.Sample.dll
+C:\github\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator.Sample\obj\Debug\net6.0\refint\VoxCake.JsonConverterGenerator.Sample.dll
+C:\github\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator.Sample\obj\Debug\net6.0\VoxCake.JsonConverterGenerator.Sample.pdb
+C:\github\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator.Sample\obj\Debug\net6.0\ref\VoxCake.JsonConverterGenerator.Sample.dll
+C:\github\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator.Sample\obj\Debug\net6.0\VoxCake.JsonConverterGenerator.Sample.csproj.AssemblyReference.cache
+C:\github\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator.Sample\bin\Debug\net6.0\VoxCake.JsonConverterGenerator.Sample.exe
+C:\github\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator.Sample\bin\Debug\net6.0\VoxCake.JsonConverterGenerator.Sample.runtimeconfig.json
+C:\github\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator.Sample\bin\Debug\net6.0\Newtonsoft.Json.dll
+C:\github\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator.Sample\obj\Debug\net6.0\VoxCake..282F3A0D.Up2Date
+C:\github\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator\VoxCake.JsonConverterGenerator.Sample\obj\Debug\net6.0\VoxCake.JsonConverterGenerator.Sample.genruntimeconfig.cache

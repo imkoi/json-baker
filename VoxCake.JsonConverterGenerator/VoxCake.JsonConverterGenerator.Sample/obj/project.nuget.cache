@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "dgSpecHash": "jL14Ofn58OE=",
+  "success": true,
+  "projectFilePath": "C:\\github\\VoxCake.JsonConverterGenerator\\VoxCake.JsonConverterGenerator\\VoxCake.JsonConverterGenerator.Sample\\VoxCake.JsonConverterGenerator.Sample.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\voxcake\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
+    "C:\\Users\\voxcake\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.32\\microsoft.netcore.app.ref.6.0.32.nupkg.sha512",
+    "C:\\Users\\voxcake\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.32\\microsoft.windowsdesktop.app.ref.6.0.32.nupkg.sha512",
+    "C:\\Users\\voxcake\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\6.0.32\\microsoft.aspnetcore.app.ref.6.0.32.nupkg.sha512",
+    "C:\\Users\\voxcake\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\6.0.32\\microsoft.netcore.app.host.win-x64.6.0.32.nupkg.sha512"
+  ],
+  "logs": []
+}
