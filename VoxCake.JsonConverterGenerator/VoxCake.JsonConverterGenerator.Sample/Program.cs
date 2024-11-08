@@ -9,7 +9,7 @@ namespace VoxCake.JsonConverterGenerator.Sample
 {
     public class Program
     {
-        private const string SampleJsonPath = "C:/github/VoxCake.JsonConverterGenerator/VoxCake.JsonConverterGenerator/VoxCake.JsonConverterGenerator.Sample/SerializedContract.json";
+        private const string SampleJsonPath = "C:/github/json-converter-generator/VoxCake.JsonConverterGenerator/VoxCake.JsonConverterGenerator.Sample/SerializedContract.json";
     
         public static void Main()
         {
