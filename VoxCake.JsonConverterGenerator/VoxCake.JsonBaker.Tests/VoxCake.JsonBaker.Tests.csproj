@@ -6,7 +6,7 @@
 
         <IsPackable>false</IsPackable>
 
-        <RootNamespace>VoxCake.JsonConverterGenerator.Tests</RootNamespace>
+        <RootNamespace>VoxCake.JsonBaker.Tests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

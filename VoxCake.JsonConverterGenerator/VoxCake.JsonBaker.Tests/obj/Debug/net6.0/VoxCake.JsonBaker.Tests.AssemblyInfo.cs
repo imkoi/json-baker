@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("VoxCake.JsonBaker.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2c30d2b3fcd30ec34f90255ed7eec0b019538065")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5c129ce9013b861319f1a23a6f4e0e0255ff087f")]
 [assembly: System.Reflection.AssemblyProductAttribute("VoxCake.JsonBaker.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("VoxCake.JsonBaker.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
