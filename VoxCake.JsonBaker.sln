@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoxCake.JsonBaker.Sample", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoxCake.JsonBaker.Tests", "VoxCake.JsonBaker.Tests\VoxCake.JsonBaker.Tests.csproj", "{78C7C7A4-EE95-40C4-9263-7366B5C9DAC0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoxCake.JsonBaker", "VoxCake.JsonBaker\VoxCake.JsonBaker.csproj", "{9430F3D1-B7E1-426F-ACAE-35803E6DEA96}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{78C7C7A4-EE95-40C4-9263-7366B5C9DAC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78C7C7A4-EE95-40C4-9263-7366B5C9DAC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{78C7C7A4-EE95-40C4-9263-7366B5C9DAC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9430F3D1-B7E1-426F-ACAE-35803E6DEA96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9430F3D1-B7E1-426F-ACAE-35803E6DEA96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9430F3D1-B7E1-426F-ACAE-35803E6DEA96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9430F3D1-B7E1-426F-ACAE-35803E6DEA96}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
