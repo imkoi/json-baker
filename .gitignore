@@ -1,10 +1,12 @@
-/VoxCake.JsonConverterGenerator/VoxCake.JsonConverterGenerator/bin/
-/VoxCake.JsonConverterGenerator/VoxCake.JsonConverterGenerator.Sample/bin/
-/VoxCake.JsonConverterGenerator/VoxCake.JsonConverterGenerator.Tests/bin/
+/VoxCake.JsonBaker/bin/
+/VoxCake.JsonBaker.SourceGenerator/bin/
+/VoxCake.JsonBaker.Sample/bin/
+/VoxCake.JsonBaker.Tests/bin/
 
-/VoxCake.JsonConverterGenerator/VoxCake.JsonConverterGenerator/obj/
-/VoxCake.JsonConverterGenerator/VoxCake.JsonConverterGenerator.Sample/obj/
-/VoxCake.JsonConverterGenerator/VoxCake.JsonConverterGenerator.Tests/obj/
+/VoxCake.JsonBaker/obj/
+/VoxCake.JsonBaker.SourceGenerator/obj/
+/VoxCake.JsonBaker.Sample/obj/
+/VoxCake.JsonBaker.Tests/obj/
 
 .idea/
 .vs/
