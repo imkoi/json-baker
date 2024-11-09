@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace VoxCake.JsonBaker.Sample
 {
-    [JsonConverter(typeof(ProductConverter_Generated))]
+    //[JsonConverter(typeof(ProductConverter_Generated))]
     public class Product
     {
         public int Id { get; set; }

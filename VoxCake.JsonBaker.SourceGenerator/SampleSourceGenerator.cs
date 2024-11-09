@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
@@ -63,104 +64,165 @@ public class SampleSourceGenerator : ISourceGenerator
         if (!(context.SyntaxContextReceiver is SerializableTypesReceiver receiver))
             return;
 
+        var codeWriter = new CodeWriter(4, "System", "System.Collections.Generic", "Newtonsoft.Json");
+        var converterNames = new List<string>(receiver.SerializableTypes.Count);
+        
         foreach (var typeSymbol in receiver.SerializableTypes)
         {
-            var source = GenerateConverter(typeSymbol);
-            context.AddSource($"{typeSymbol.Name}Converter_Generated.g.cs", SourceText.From(source, Encoding.UTF8));
+            var converterName = GenerateConverter(typeSymbol, codeWriter);
+            
+            converterNames.Add(converterName);
         }
+        
+        using(codeWriter.Scope("public class JsonBakerAssemblyConverter : JsonConverter"))
+        {
+            codeWriter.WriteLine("private Dictionary<Type, JsonConverter> _converters;");
+            codeWriter.WriteLine("private bool _initialized;");
+            
+            using(codeWriter.Scope("public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)"))
+            {
+                codeWriter.WriteLine("_converters[value.GetType()].WriteJson(writer, value, serializer);");
+            }
+            
+            using(codeWriter.Scope("public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)"))
+            {
+                codeWriter.WriteLine("return _converters[objectType].ReadJson(reader, objectType, existingValue, serializer);");
+            }
+            
+            using(codeWriter.Scope("public override bool CanConvert(Type objectType)"))
+            {
+                using (codeWriter.Scope("if (!_initialized)"))
+                {
+                    codeWriter.WriteLine("Initialize();");
+                    codeWriter.WriteLine("_initialized = true;");
+                }
+                
+                codeWriter.WriteLine("return _converters.TryGetValue(objectType, out JsonConverter converter) && converter.CanConvert(objectType);");
+            }
+            
+            using(codeWriter.Scope("private void Initialize()"))
+            {
+                using (codeWriter.Scope("_converters = new Dictionary<Type, JsonConverter>(16)", ";"))
+                {
+                    var index = 0;
+                    
+                    foreach (var converterName in converterNames)
+                    {
+                        var inner = $"typeof({converterName}), new {converterName}()";
+                        var endSymbol = index + 1 < converterNames.Count ? "," : "";
+                        
+                        codeWriter.WriteLine("{ " + inner + " }" + endSymbol);
+
+                        index++;
+                    }
+                }
+            }
+        }
+        
+        var generatedCode = codeWriter.Build();
+        
+        //context.AddSource("JsonBakerAssemblyConverter.g.cs", SourceText.From(generatedCode, Encoding.UTF8));
     }
 
-    private string GenerateConverter(INamedTypeSymbol typeSymbol)
+    private string GenerateConverter(INamedTypeSymbol typeSymbol, CodeWriter writer)
     {
+        var resultName = string.Empty;
         var namespaceName = typeSymbol.ContainingNamespace.ToDisplayString();
         var className = typeSymbol.Name;
         var converterName = $"{className}Converter_Generated";
 
-        var sb = new StringBuilder();
-
-        sb.AppendLine("using System;");
-        sb.AppendLine("using Newtonsoft.Json;");
-        sb.AppendLine();
-
+        var namespaceScope = default(IDisposable);
+        
         if (!string.IsNullOrEmpty(namespaceName))
         {
-            sb.AppendLine($"namespace {namespaceName}");
-            sb.AppendLine("{");
+            resultName += namespaceName;
+            
+            namespaceScope = writer.Scope($"namespace {namespaceName}");
         }
 
-        sb.AppendLine($"    public class {converterName} : JsonConverter<{className}>");
-        sb.AppendLine("    {");
-        sb.AppendLine($"        public override void WriteJson(JsonWriter writer, {className} value, JsonSerializer serializer)");
-        sb.AppendLine("        {");
-        sb.AppendLine("            writer.WriteStartObject();");
+        resultName += converterName;
 
-        foreach (var member in typeSymbol.GetMembers())
+        using (writer.Scope($"public class {converterName} : JsonConverter<{className}>"))
         {
-            if (member is IPropertySymbol property && !property.IsStatic && property.GetMethod != null)
+            using(writer.Scope($"public override void WriteJson(JsonWriter writer, {className} value, JsonSerializer serializer)"))
             {
-                var propertyName = property.Name;
+                writer.WriteLine("writer.WriteStartObject();");
 
-                sb.AppendLine($"            writer.WritePropertyName(nameof(value.{propertyName}));");
-
-                if (IsPrimitiveType(property.Type))
+                foreach (var member in GetSerializableMembers(typeSymbol))
                 {
-                    sb.AppendLine($"            writer.WriteValue(value.{propertyName});");
-                }
-                else
-                {
-                    sb.AppendLine($"            serializer.Serialize(writer, value.{propertyName});");
-                }
-            }
-            else if (member is IFieldSymbol field && !field.IsStatic)
-            {
-                var fieldName = field.Name;
+                    var propertyName = member.name;
 
-                if (!fieldName.EndsWith(">k__BackingField"))
-                {
-                    sb.AppendLine($"            writer.WritePropertyName(nameof(value.{fieldName}));");
+                    writer.WriteLine($"writer.WritePropertyName(nameof(value.{propertyName}));");
 
-                    if (IsPrimitiveType(field.Type))
+                    if (IsPrimitiveType(member.type))
                     {
-                        sb.AppendLine($"            writer.WriteValue(value.{fieldName});");
+                        writer.WriteLine($"writer.WriteValue(value.{propertyName});");
                     }
                     else
                     {
-                        sb.AppendLine($"            serializer.Serialize(writer, value.{fieldName});");
+                        writer.WriteLine($"serializer.Serialize(writer, value.{propertyName});");
                     }
                 }
+                
+                writer.WriteLine("writer.WriteEndObject();");
+            }
+            
+            using(writer.Scope($"public override {className} ReadJson(JsonReader reader, Type objectType, {className} existingValue, bool hasExistingValue, JsonSerializer serializer)"))
+            {
+                using (writer.Scope("if (reader.TokenType == JsonToken.Null)"))
+                {
+                    writer.WriteLine("return null;");
+                }
+                
+                writer.WriteLine($"var value = new {className}();");
+                writer.WriteLine("reader.Read();");
+
+                using (writer.Scope("while (reader.TokenType == JsonToken.PropertyName)"))
+                {
+                    writer.WriteLine("var propertyName = (string)reader.Value;");
+                    writer.WriteLine("reader.Read();");
+                    writer.WriteLine("");
+
+                    using (writer.Scope("switch (propertyName)"))
+                    {
+                        foreach (var member in GetSerializableMembers(typeSymbol))
+                        {
+                            var readValueCode = GetReadValueCode(member.type);
+                            
+                            writer.WriteLine($"case nameof(value.{member.name}):");
+                            writer.WriteLine($"    value.{member.name} = {readValueCode};");
+                            writer.WriteLine($"    break;");
+                        }
+                        
+                        writer.WriteLine("default:");
+                        writer.WriteLine("    reader.Skip();");
+                        writer.WriteLine("    break;");
+                    }
+                    
+                    writer.WriteLine("reader.Read();");
+                }
+                
+                writer.WriteLine("return value;");
+            }
+            
+            using(writer.Scope("public override bool CanConvert(Type objectType)"))
+            {
+                writer.WriteLine("return true;");
             }
         }
+        
+        namespaceScope?.Dispose();
 
-        sb.AppendLine("            writer.WriteEndObject();");
-        sb.AppendLine("        }");
-        sb.AppendLine();
+        return resultName;
+    }
 
-        sb.AppendLine($"        public override {className} ReadJson(JsonReader reader, Type objectType, {className} existingValue, bool hasExistingValue, JsonSerializer serializer)");
-        sb.AppendLine("        {");
-        sb.AppendLine("            if (reader.TokenType == JsonToken.Null)");
-        sb.AppendLine("                return null;");
-        sb.AppendLine();
-        sb.AppendLine($"            var value = new {className}();");
-        sb.AppendLine("            reader.Read();");
-        sb.AppendLine();
-        sb.AppendLine("            while (reader.TokenType == JsonToken.PropertyName)");
-        sb.AppendLine("            {");
-        sb.AppendLine("                var propertyName = (string)reader.Value;");
-        sb.AppendLine("                reader.Read();");
-        sb.AppendLine();
-        sb.AppendLine("                switch (propertyName)");
-        sb.AppendLine("                {");
-
+    private IEnumerable<(string name, ITypeSymbol type)> GetSerializableMembers(INamedTypeSymbol typeSymbol)
+    {
         foreach (var member in typeSymbol.GetMembers())
         {
             if (member is IPropertySymbol property && !property.IsStatic && property.SetMethod != null)
             {
-                var propertyName = property.Name;
-                var readValueCode = GetReadValueCode(property.Type);
-
-                sb.AppendLine($"                    case nameof(value.{propertyName}):");
-                sb.AppendLine($"                        value.{propertyName} = {readValueCode};");
-                sb.AppendLine("                        break;");
+                yield return (property.Name, property.Type);
             }
             else if (member is IFieldSymbol field && !field.IsStatic)
             {
@@ -168,34 +230,10 @@ public class SampleSourceGenerator : ISourceGenerator
 
                 if (!fieldName.EndsWith(">k__BackingField"))
                 {
-                    var readValueCode = GetReadValueCode(field.Type);
-
-                    sb.AppendLine($"                    case nameof(value.{fieldName}):");
-                    sb.AppendLine($"                        value.{fieldName} = {readValueCode};");
-                    sb.AppendLine("                        break;");
+                    yield return (fieldName, field.Type);
                 }
             }
         }
-
-        sb.AppendLine("                    default:");
-        sb.AppendLine("                        reader.Skip();");
-        sb.AppendLine("                        break;");
-        sb.AppendLine("                }");
-        sb.AppendLine();
-        sb.AppendLine("                reader.Read();");
-        sb.AppendLine("            }");
-        sb.AppendLine();
-        sb.AppendLine("            return value;");
-        sb.AppendLine("        }");
-
-        sb.AppendLine("    }");
-
-        if (!string.IsNullOrEmpty(namespaceName))
-        {
-            sb.AppendLine("}");
-        }
-
-        return sb.ToString();
     }
 
     private string GetReadValueCode(ITypeSymbol typeSymbol)
