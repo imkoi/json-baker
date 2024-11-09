@@ -8,9 +8,26 @@ namespace VoxCake.JsonBaker.SourceGenerator;
 public class SerializableTypesReceiver : ISyntaxContextReceiver
 {
     public HashSet<INamedTypeSymbol> SerializableTypes { get; } = new HashSet<INamedTypeSymbol>();
+    public HashSet<INamedTypeSymbol> ReferencedButNotBakedTypes { get; } = new HashSet<INamedTypeSymbol>();
 
     public void OnVisitSyntaxNode(GeneratorSyntaxContext context)
     {
+        if (context.Node is ClassDeclarationSyntax classDeclaration)
+        {
+            var typeSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclaration) as INamedTypeSymbol;
+            if (typeSymbol == null)
+                return;
+            
+            foreach (var attributeData in typeSymbol.GetAttributes())
+            {
+                if (attributeData.AttributeClass.ToDisplayString() == "VoxCake.JsonBaker.JsonBakerAttribute")
+                {
+                    SerializableTypes.Add(typeSymbol);
+                    break;
+                }
+            }
+        }
+        
         if (context.Node is InvocationExpressionSyntax invocationExpr)
         {
             var methodSymbol = context.SemanticModel.GetSymbolInfo(invocationExpr).Symbol as IMethodSymbol;
@@ -28,7 +45,7 @@ public class SerializableTypesReceiver : ISyntaxContextReceiver
 
                     if (typeInfo.Type is INamedTypeSymbol namedTypeSymbol)
                     {
-                        SerializableTypes.Add(namedTypeSymbol);
+                        ReferencedButNotBakedTypes.Add(namedTypeSymbol);
 
                         AddGenericTypeArguments(namedTypeSymbol);
                     }
@@ -43,7 +60,7 @@ public class SerializableTypesReceiver : ISyntaxContextReceiver
                     var typeArgument = methodSymbol.TypeArguments.FirstOrDefault();
                     if (typeArgument is INamedTypeSymbol namedTypeSymbol)
                     {
-                        SerializableTypes.Add(namedTypeSymbol);
+                        ReferencedButNotBakedTypes.Add(namedTypeSymbol);
                     }
                 }
                 else
@@ -62,7 +79,7 @@ public class SerializableTypesReceiver : ISyntaxContextReceiver
                                 var typeSymbol = context.SemanticModel.GetSymbolInfo(typeSyntax).Symbol as INamedTypeSymbol;
                                 if (typeSymbol != null)
                                 {
-                                    SerializableTypes.Add(typeSymbol);
+                                    ReferencedButNotBakedTypes.Add(typeSymbol);
                                 }
                             }
                             else if (typeArgumentExpression is IdentifierNameSyntax identifierName)
@@ -74,7 +91,7 @@ public class SerializableTypesReceiver : ISyntaxContextReceiver
                                     var constantValue = localSymbol.ConstantValue as INamedTypeSymbol;
                                     if (constantValue != null)
                                     {
-                                        SerializableTypes.Add(constantValue);
+                                        ReferencedButNotBakedTypes.Add(constantValue);
                                     }
                                 }
                             }
@@ -91,7 +108,7 @@ public class SerializableTypesReceiver : ISyntaxContextReceiver
         {
             if (typeArg is INamedTypeSymbol namedTypeArg)
             {
-                SerializableTypes.Add(namedTypeArg);
+                ReferencedButNotBakedTypes.Add(namedTypeArg);
 
                 AddGenericTypeArguments(namedTypeArg);
             }

@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
 
 namespace VoxCake.JsonBaker.Sample
 {
-    //[JsonConverter(typeof(ProductConverter_Generated))]
+    [JsonBaker]
     public class Product
     {
         public int Id { get; set; }
@@ -15,6 +14,7 @@ namespace VoxCake.JsonBaker.Sample
         public List<Review> Reviews { get; set; }
     }
 
+    [JsonBaker]
     public class Category
     {
         public int Id { get; set; }
@@ -22,18 +22,21 @@ namespace VoxCake.JsonBaker.Sample
         public List<Subcategory> Subcategories { get; set; }
     }
 
+    [JsonBaker]
     public class Subcategory
     {
         public int Id { get; set; }
         public string Name { get; set; }
     }
 
+    [JsonBaker]
     public class Availability
     {
         public bool Online { get; set; }
         public List<Store> Stores { get; set; }
     }
 
+    [JsonBaker]
     public class Store
     {
         public int Id { get; set; }
@@ -41,6 +44,7 @@ namespace VoxCake.JsonBaker.Sample
         public int Stock { get; set; }
     }
 
+    [JsonBaker]
     public class Specifications
     {
         public string Weight { get; set; }
@@ -48,6 +52,7 @@ namespace VoxCake.JsonBaker.Sample
         public List<string> Features { get; set; }
     }
 
+    [JsonBaker]
     public class Dimensions
     {
         public int Width { get; set; }
@@ -55,6 +60,7 @@ namespace VoxCake.JsonBaker.Sample
         public int Depth { get; set; }
     }
 
+    [JsonBaker]
     public class Review
     {
         public string User { get; set; }
