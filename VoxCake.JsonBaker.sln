@@ -1,10 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoxCake.JsonBaker.SourceGenerator", "VoxCake.JsonConverterGenerator\VoxCake.JsonBaker.SourceGenerator\VoxCake.JsonBaker.SourceGenerator.csproj", "{E18AC71F-1E58-4743-A0BD-A9FC527E7031}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoxCake.JsonBaker.SourceGenerator", "VoxCake.JsonBaker.SourceGenerator\VoxCake.JsonBaker.SourceGenerator.csproj", "{E18AC71F-1E58-4743-A0BD-A9FC527E7031}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoxCake.JsonBaker.Sample", "VoxCake.JsonConverterGenerator\VoxCake.JsonBaker.Sample\VoxCake.JsonBaker.Sample.csproj", "{068EB636-335D-4F4A-903B-D03FD9DEA795}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoxCake.JsonBaker.Sample", "VoxCake.JsonBaker.Sample\VoxCake.JsonBaker.Sample.csproj", "{068EB636-335D-4F4A-903B-D03FD9DEA795}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoxCake.JsonBaker.Tests", "VoxCake.JsonConverterGenerator\VoxCake.JsonBaker.Tests\VoxCake.JsonBaker.Tests.csproj", "{78C7C7A4-EE95-40C4-9263-7366B5C9DAC0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoxCake.JsonBaker.Tests", "VoxCake.JsonBaker.Tests\VoxCake.JsonBaker.Tests.csproj", "{78C7C7A4-EE95-40C4-9263-7366B5C9DAC0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

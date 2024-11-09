@@ -1,0 +1,75 @@
+﻿{
+  "Id": 12345,
+  "Name": "Продукт",
+  "Price": 99.99,
+  "Categories": [
+    {
+      "Id": 1,
+      "Name": "Электроника",
+      "Subcategories": [
+        {
+          "Id": 10,
+          "Name": "Смартфоны"
+        },
+        {
+          "Id": 11,
+          "Name": "Ноутбуки"
+        }
+      ]
+    },
+    {
+      "Id": 2,
+      "Name": "Бытовая техника",
+      "Subcategories": [
+        {
+          "Id": 20,
+          "Name": "Холодильники"
+        },
+        {
+          "Id": 21,
+          "Name": "Стиральные машины"
+        }
+      ]
+    }
+  ],
+  "Availability": {
+    "Online": true,
+    "Stores": [
+      {
+        "Id": 100,
+        "Name": "Магазин на Ленинском",
+        "Stock": 5
+      },
+      {
+        "Id": 101,
+        "Name": "Магазин на Тверской",
+        "Stock": 0
+      }
+    ]
+  },
+  "Specifications": {
+    "Weight": "1kg",
+    "Dimensions": {
+      "Width": 10,
+      "Height": 20,
+      "Depth": 2
+    },
+    "Features": [
+      "Bluetooth",
+      "Wi-Fi",
+      "GPS"
+    ]
+  },
+  "Reviews": [
+    {
+      "User": "Иван Иванов",
+      "Rating": 5,
+      "Comment": "Отличный продукт!"
+    },
+    {
+      "User": "Петр Петров",
+      "Rating": 4,
+      "Comment": "Хорошо, но есть недочеты"
+    }
+  ]
+}
