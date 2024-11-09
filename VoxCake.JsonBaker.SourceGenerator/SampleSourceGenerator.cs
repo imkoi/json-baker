@@ -65,7 +65,7 @@ public class SampleSourceGenerator : ISourceGenerator
             return;
 
         var codeWriter = new CodeWriter(4, "System", "System.Collections.Generic", "Newtonsoft.Json");
-        var converterNames = new List<string>(receiver.SerializableTypes.Count);
+        var converterNames = new List<(string typeName, string converterName)>(receiver.SerializableTypes.Count);
         
         foreach (var typeSymbol in receiver.SerializableTypes)
         {
@@ -78,6 +78,7 @@ public class SampleSourceGenerator : ISourceGenerator
         {
             codeWriter.WriteLine("private Dictionary<Type, JsonConverter> _converters;");
             codeWriter.WriteLine("private bool _initialized;");
+            codeWriter.EmptyLine();
             
             using(codeWriter.Scope("public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)"))
             {
@@ -106,9 +107,9 @@ public class SampleSourceGenerator : ISourceGenerator
                 {
                     var index = 0;
                     
-                    foreach (var converterName in converterNames)
+                    foreach (var converter in converterNames)
                     {
-                        var inner = $"typeof({converterName}), new {converterName}()";
+                        var inner = $"typeof({converter.typeName}), new {converter.converterName}()";
                         var endSymbol = index + 1 < converterNames.Count ? "," : "";
                         
                         codeWriter.WriteLine("{ " + inner + " }" + endSymbol);
@@ -121,12 +122,13 @@ public class SampleSourceGenerator : ISourceGenerator
         
         var generatedCode = codeWriter.Build();
         
-        //context.AddSource("JsonBakerAssemblyConverter.g.cs", SourceText.From(generatedCode, Encoding.UTF8));
+        context.AddSource("JsonBakerAssemblyConverter.g.cs", SourceText.From(generatedCode, Encoding.UTF8));
     }
 
-    private string GenerateConverter(INamedTypeSymbol typeSymbol, CodeWriter writer)
+    private (string typeName, string converterName) GenerateConverter(INamedTypeSymbol typeSymbol, CodeWriter writer)
     {
-        var resultName = string.Empty;
+        var resultConverterName = string.Empty;
+        var resultTypeName = string.Empty;
         var namespaceName = typeSymbol.ContainingNamespace.ToDisplayString();
         var className = typeSymbol.Name;
         var converterName = $"{className}Converter_Generated";
@@ -135,39 +137,43 @@ public class SampleSourceGenerator : ISourceGenerator
         
         if (!string.IsNullOrEmpty(namespaceName))
         {
-            resultName += namespaceName;
+            resultConverterName += namespaceName + ".";
+            resultTypeName += namespaceName + ".";
             
             namespaceScope = writer.Scope($"namespace {namespaceName}");
         }
 
-        resultName += converterName;
+        resultConverterName += converterName;
+        resultTypeName += className;
 
-        using (writer.Scope($"public class {converterName} : JsonConverter<{className}>"))
+        using (writer.Scope($"public class {converterName} : JsonConverter"))
         {
-            using(writer.Scope($"public override void WriteJson(JsonWriter writer, {className} value, JsonSerializer serializer)"))
+            using(writer.Scope("public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)"))
             {
+                writer.WriteLine($"var concreteValue = ({className}) value;");
+                
                 writer.WriteLine("writer.WriteStartObject();");
 
                 foreach (var member in GetSerializableMembers(typeSymbol))
                 {
                     var propertyName = member.name;
 
-                    writer.WriteLine($"writer.WritePropertyName(nameof(value.{propertyName}));");
+                    writer.WriteLine($"writer.WritePropertyName(nameof(concreteValue.{propertyName}));");
 
                     if (IsPrimitiveType(member.type))
                     {
-                        writer.WriteLine($"writer.WriteValue(value.{propertyName});");
+                        writer.WriteLine($"writer.WriteValue(concreteValue.{propertyName});");
                     }
                     else
                     {
-                        writer.WriteLine($"serializer.Serialize(writer, value.{propertyName});");
+                        writer.WriteLine($"serializer.Serialize(writer, concreteValue.{propertyName});");
                     }
                 }
                 
                 writer.WriteLine("writer.WriteEndObject();");
             }
             
-            using(writer.Scope($"public override {className} ReadJson(JsonReader reader, Type objectType, {className} existingValue, bool hasExistingValue, JsonSerializer serializer)"))
+            using(writer.Scope("public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)"))
             {
                 using (writer.Scope("if (reader.TokenType == JsonToken.Null)"))
                 {
@@ -176,6 +182,7 @@ public class SampleSourceGenerator : ISourceGenerator
                 
                 writer.WriteLine($"var value = new {className}();");
                 writer.WriteLine("reader.Read();");
+                writer.EmptyLine();
 
                 using (writer.Scope("while (reader.TokenType == JsonToken.PropertyName)"))
                 {
@@ -213,7 +220,7 @@ public class SampleSourceGenerator : ISourceGenerator
         
         namespaceScope?.Dispose();
 
-        return resultName;
+        return (resultTypeName, resultConverterName);
     }
 
     private IEnumerable<(string name, ITypeSymbol type)> GetSerializableMembers(INamedTypeSymbol typeSymbol)

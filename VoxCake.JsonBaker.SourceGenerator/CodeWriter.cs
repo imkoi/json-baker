@@ -9,6 +9,7 @@ public class CodeWriter
     private readonly StringBuilder _builder = new StringBuilder(1024);
     
     private int _indent;
+    private bool _previousScopeJustClosed;
 
     public CodeWriter(int scopeIdentSize, params string[] usingLiterals)
     {
@@ -21,22 +22,41 @@ public class CodeWriter
         _builder.AppendLine();
     }
 
-    public void Write(string text)
+    public void Write(string text, bool ensureEmptyLineAfterScope = true)
     {
+        if (ensureEmptyLineAfterScope)
+        {
+            EnsureEmptyLineAfterScope();
+        }
+        
         var ident = GetIdent();
         
         _builder.Append(ident).Append(text);
     }
 
-    public void WriteLine(string text)
+    public void WriteLine(string text, bool ensureEmptyLineAfterScope = true)
     {
+        if (ensureEmptyLineAfterScope)
+        {
+            EnsureEmptyLineAfterScope();
+        }
+        
         var ident = GetIdent();
         
         _builder.Append(ident).AppendLine(text);
     }
+    
+    public void EmptyLine()
+    {
+        var ident = GetIdent();
+        
+        _builder.AppendLine(ident);
+    }
 
     public IDisposable Scope(string code, string? afterScopeCode = default)
     {
+        EnsureEmptyLineAfterScope();
+        
         return new CodeScope(this, code, afterScopeCode);
     }
 
@@ -55,6 +75,20 @@ public class CodeWriter
         var result = _builder.ToString();
 
         return result;
+    }
+    
+    public void NotifyScopeClosed()
+    {
+        _previousScopeJustClosed = true;
+    }
+
+    private void EnsureEmptyLineAfterScope()
+    {
+        if (_previousScopeJustClosed)
+        {
+            EmptyLine();
+            _previousScopeJustClosed = false;
+        }
     }
 
     private string GetIdent()
@@ -79,8 +113,8 @@ public class CodeScope : IDisposable
         _writer = writer;
         _afterScopeCode = afterScopeCode;
         
-        _writer.WriteLine(code);
-        _writer.WriteLine("{");
+        _writer.WriteLine(code, false);
+        _writer.WriteLine("{", false);
         
         _writer.AddIdent();
     }
@@ -91,12 +125,13 @@ public class CodeScope : IDisposable
         
         if (string.IsNullOrEmpty(_afterScopeCode))
         {
-            _writer.WriteLine("}\n");
+            _writer.Write("}\n", false);
         }
         else
         {
-            _writer.Write("}");
-            _writer.WriteLine(_afterScopeCode!);
+            _writer.Write("}" + _afterScopeCode + "\n", false);
         }
+
+        _writer.NotifyScopeClosed();
     }
 }

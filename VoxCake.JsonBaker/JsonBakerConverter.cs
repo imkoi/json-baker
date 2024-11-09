@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace VoxCake.JsonBaker
 {
-    public class JsonBakerConverter : JsonConverter
+    internal class JsonBakerConverter : JsonConverter
     {
         private Dictionary<Assembly, JsonConverter> _assemblyConverters = new Dictionary<Assembly, JsonConverter>(16);
         
@@ -40,7 +40,9 @@ namespace VoxCake.JsonBaker
                 _assemblyConverters.Add(typeAssembly, assemblyConverter);
             }
             
-            return assemblyConverter != null && assemblyConverter.CanConvert(objectType);
+            var isConvertible = assemblyConverter != null && assemblyConverter.CanConvert(objectType);
+            
+            return isConvertible;
         }
     }
 }
