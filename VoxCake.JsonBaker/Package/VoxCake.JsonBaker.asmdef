@@ -1,0 +1,14 @@
+{
+  "name": "VoxCake.JsonBaker",
+  "rootNamespace": "VoxCake.JsonBaker",
+  "references": [],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}
