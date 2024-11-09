@@ -64,6 +64,11 @@ public class SampleSourceGenerator : ISourceGenerator
         if (!(context.SyntaxContextReceiver is SerializableTypesReceiver receiver))
             return;
 
+        if (receiver.SerializableTypes.Count < 1)
+        {
+            return;
+        }
+
         var codeWriter = new CodeWriter(4, "System", "System.Collections.Generic", "Newtonsoft.Json");
         var converterNames = new List<(string typeName, string converterName)>(receiver.SerializableTypes.Count);
         
