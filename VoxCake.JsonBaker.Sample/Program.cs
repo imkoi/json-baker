@@ -9,7 +9,7 @@ namespace VoxCake.JsonBaker.Sample
 {
     public class Program
     {
-        private const string SampleJsonPath = "C:/github/json-converter-generator/VoxCake.JsonConverterGenerator/VoxCake.JsonConverterGenerator.Sample/SerializedContract.json";
+        private const string SampleJsonPath = "C:/github/json-converter-generator/VoxCake.JsonBaker.Sample/SerializedContract.json";
     
         public static void Main()
         {
@@ -17,7 +17,7 @@ namespace VoxCake.JsonBaker.Sample
 
             var obj = CreateProduct();
         
-            var generatedProductJson = JsonConvert.SerializeObject(obj);
+            var generatedProductJson = JsonConvert.SerializeObject(obj, JsonBakerSettings.Default);
             
             CompareStrings(JToken.Parse(productJson).ToString(), JToken.Parse(generatedProductJson).ToString());
             
