@@ -1,0 +1,20 @@
+﻿{
+  "name": "com.voxcake.jsonbacker",
+  "version": "1.0.0",
+  "displayName": "VoxCake JsonBaker",
+  "description": "Package provide functional of JsonConverter source generators",
+  "unity": "2022.3",
+  "unityRelease": "2f1",
+  "documentationUrl": "https://github.com/imkoi/json-baker",
+  "changelogUrl": "https://github.com/imkoi/json-baker/commits/main",
+  "licensesUrl": "https://github.com/imkoi/json-baker/blob/main/LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/imkoi/json-baker.git?path=/com.voxcake.jsonbacker"
+  },
+  "author": {
+    "name": "VoxCake",
+    "email": "sviridalos@gmail.com",
+    "url": "https://github.com/imkoi/json-baker"
+  }
+}
