@@ -15,6 +15,11 @@ namespace VoxCake.JsonBaker.Sample
         {
             var productJson = File.ReadAllText(SampleJsonPath);
 
+            JsonBakerSettings.WarningReceived += warning =>
+            {
+                Console.WriteLine(warning);
+            };
+
             var obj = CreateProduct();
         
             var generatedProductJson = JsonConvert.SerializeObject(obj, JsonBakerSettings.Default);
@@ -22,6 +27,8 @@ namespace VoxCake.JsonBaker.Sample
             CompareStrings(JToken.Parse(productJson).ToString(), JToken.Parse(generatedProductJson).ToString());
             
             var productValue = JsonConvert.DeserializeObject<Product>(productJson);
+            
+            JsonConvert.PopulateObject(generatedProductJson, productValue, JsonBakerSettings.Default);
         }
         
         public static void CompareStrings(string expected, string actual)

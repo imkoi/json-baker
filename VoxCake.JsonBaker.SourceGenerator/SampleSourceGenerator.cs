@@ -69,7 +69,7 @@ public class SampleSourceGenerator : ISourceGenerator
             return;
         }
 
-        var codeWriter = new CodeWriter(4, "System", "System.Collections.Generic", "Newtonsoft.Json");
+        var codeWriter = new CodeWriter(4, "System", "System.Collections.Generic", "Newtonsoft.Json", "VoxCake.JsonBaker");
         var converterNames = new List<(string typeName, string converterName)>(receiver.SerializableTypes.Count);
         
         foreach (var typeSymbol in receiver.SerializableTypes)
@@ -79,31 +79,23 @@ public class SampleSourceGenerator : ISourceGenerator
             converterNames.Add(converterName);
         }
         
-        using(codeWriter.Scope("public class JsonBakerAssemblyConverter : JsonConverter"))
+        using(codeWriter.Scope("public class JsonBakerAssemblyConverterProvider : JsonBakerAssemblyConverterProviderBase"))
         {
             codeWriter.WriteLine("private Dictionary<Type, JsonConverter> _converters;");
             codeWriter.WriteLine("private bool _initialized;");
             codeWriter.EmptyLine();
             
-            using(codeWriter.Scope("public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)"))
-            {
-                codeWriter.WriteLine("_converters[value.GetType()].WriteJson(writer, value, serializer);");
-            }
-            
-            using(codeWriter.Scope("public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)"))
-            {
-                codeWriter.WriteLine("return _converters[objectType].ReadJson(reader, objectType, existingValue, serializer);");
-            }
-            
-            using(codeWriter.Scope("public override bool CanConvert(Type objectType)"))
+            using(codeWriter.Scope("public override JsonConverter GetConverter(Type type)"))
             {
                 using (codeWriter.Scope("if (!_initialized)"))
                 {
                     codeWriter.WriteLine("Initialize();");
                     codeWriter.WriteLine("_initialized = true;");
                 }
+
+                codeWriter.WriteLine("_converters.TryGetValue(type, out var converter);");
                 
-                codeWriter.WriteLine("return _converters.TryGetValue(objectType, out JsonConverter converter) && converter.CanConvert(objectType);");
+                codeWriter.WriteLine("return converter;");
             }
             
             using(codeWriter.Scope("private void Initialize()"))
