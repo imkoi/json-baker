@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace VoxCake.JsonBaker.Sample
 {
@@ -18,6 +19,7 @@ namespace VoxCake.JsonBaker.Sample
     public class Category
     {
         public int Id { get; set; }
+        [JsonProperty("name")]
         public string Name { get; set; }
         public List<Subcategory> Subcategories { get; set; }
     }

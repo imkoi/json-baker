@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace VoxCake.JsonBaker.SourceGenerator;
 
-public class SerializableTypesReceiver : ISyntaxContextReceiver
+public class BakedTypesReceiver : ISyntaxContextReceiver
 {
     public HashSet<INamedTypeSymbol> SerializableTypes { get; } = new HashSet<INamedTypeSymbol>();
     public HashSet<INamedTypeSymbol> ReferencedButNotBakedTypes { get; } = new HashSet<INamedTypeSymbol>();
