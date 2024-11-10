@@ -12,7 +12,11 @@ namespace VoxCake.JsonBaker
         public static event Action<string> WarningReceived;
 
         private static JsonSerializerSettings _settings;
+#if JSONBAKER_PUSH_PERFORMANCE_WARNINGS
         private static JsonBakerConverter _converter = new JsonBakerConverter(OnWarning);
+#else
+        private static JsonBakerConverter _converter = new JsonBakerConverter();
+#endif
         private static DefaultContractResolver _contractResolver = new DefaultContractResolver();
         
         public static void ExcludeAssembly(string assemblyName)

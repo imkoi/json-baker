@@ -17,7 +17,7 @@ namespace VoxCake.JsonBaker
             "System.Runtime"
         };
 
-        public JsonBakerConverter(Action<string> warningCallback)
+        public JsonBakerConverter(Action<string> warningCallback = null)
         {
             _warningCallback = warningCallback;
         }
@@ -58,8 +58,8 @@ namespace VoxCake.JsonBaker
                         {
                             converterProvider = FormatterServices.GetUninitializedObject(converterType) as JsonBakerAssemblyConverterProviderBase;
                         }
-#if DEBUG
-                        else
+#if JSONBAKER_PUSH_PERFORMANCE_WARNINGS
+                        else if(_warningCallback != null)
                         {
                             _warningCallback.Invoke($"'{objectType}' and all types inside '{typeAssembly.GetName().Name}' dont have baked converters, " +
                                                     $"please exclude assembly from processing by passing it to {nameof(JsonBakerSettings)}.{nameof(JsonBakerSettings.ExcludeAssembly)}");
@@ -78,10 +78,10 @@ namespace VoxCake.JsonBaker
                 _converters[objectType] = converter;
             }
             
-#if DEBUG
+#if JSONBAKER_PUSH_PERFORMANCE_WARNINGS
             var isConvertible = converter != null && converter.CanConvert(objectType);
             
-            if (!isConvertible)
+            if (!isConvertible && _warningCallback != null)
             {
                 _warningCallback.Invoke($"'{objectType}' dont have baked converter, please exclude type from " +
                                         $"processing by passing it to {nameof(JsonBakerSettings)}.{nameof(JsonBakerSettings.ExcludeType)}");
