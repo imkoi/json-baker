@@ -44,48 +44,38 @@ namespace VoxCake.JsonBaker
 
         public override bool CanConvert(Type objectType)
         {
-            var converter = default(JsonConverter);
-            
-            if (!_converters.TryGetValue(objectType, out converter))
+            if (!_converters.TryGetValue(objectType, out var converter))
             {
                 var typeAssembly = objectType.Assembly;
                 
-                if (!_converterProviders.TryGetValue(typeAssembly, out var assemblyConverter))
+                if (!_converterProviders.TryGetValue(typeAssembly, out var converterProvider))
                 {
-                    if (_excludedAssemblies.Contains(typeAssembly.GetName().Name))
+                    if (!_excludedAssemblies.Contains(typeAssembly.GetName().Name))
                     {
-#if !DEBUG
-                        return false;
-#endif
-                    }
-                
-                    var converterType = typeAssembly.GetType("JsonBakerAssemblyConverterProvider", false, false);
+                        var converterType = typeAssembly.GetType("JsonBakerAssemblyConverterProvider", false, false);
 
-                    if (converterType != null)
-                    {
-                        assemblyConverter = FormatterServices.GetUninitializedObject(converterType) as JsonBakerAssemblyConverterProviderBase;
-                        
-                        converter = assemblyConverter.GetConverter(objectType);
-                    }
+                        if (converterType != null)
+                        {
+                            converterProvider = FormatterServices.GetUninitializedObject(converterType) as JsonBakerAssemblyConverterProviderBase;
+                        }
 #if DEBUG
-                    else
-                    {
-                        _warningCallback.Invoke($"'{objectType}' and all types inside '{typeAssembly.GetName().Name}' dont have baked converters, " +
-                                                $"please exclude assembly from processing by passing it to {nameof(JsonBakerSettings)}.{nameof(JsonBakerSettings.ExcludeAssembly)}");
-                    }
+                        else
+                        {
+                            _warningCallback.Invoke($"'{objectType}' and all types inside '{typeAssembly.GetName().Name}' dont have baked converters, " +
+                                                    $"please exclude assembly from processing by passing it to {nameof(JsonBakerSettings)}.{nameof(JsonBakerSettings.ExcludeAssembly)}");
+                        }
 #endif
-                
-                    _converterProviders.Add(typeAssembly, assemblyConverter);
-                }
-                else
-                {
-                    if (assemblyConverter != null)
-                    {
-                        converter = assemblyConverter.GetConverter(objectType);
                     }
+                    
+                    _converterProviders[typeAssembly] = converterProvider;
                 }
                 
-                _converters.Add(objectType, converter);
+                if (converterProvider != null)
+                {
+                    converter = converterProvider.GetConverter(objectType);
+                }
+                
+                _converters[objectType] = converter;
             }
             
 #if DEBUG
