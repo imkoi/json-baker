@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 
 namespace VoxCake.JsonBaker.SourceGenerator;
@@ -49,22 +50,49 @@ public static class TypeSymbolExtensions
         "Uri"
     };
     
-    public static IEnumerable<(string name, ITypeSymbol type)> GetSerializableMembers(this ITypeSymbol typeSymbol)
+    public static IEnumerable<(string memberName, ITypeSymbol memberType, string propertyName)> GetSerializableMembers(this ITypeSymbol typeSymbol)
     {
         foreach (var member in typeSymbol.GetMembers())
         {
+            if (member.Name.EndsWith(">k__BackingField"))
+            {
+                continue;
+            }
+            
+            if (member.GetAttributes().Any(attribute =>
+                    attribute.AttributeClass?.ToDisplayString() == "Newtonsoft.Json.JsonIgnoreAttribute"))
+            {
+                continue;
+            }
+            
+            var propertyName = string.Empty;
+            
+            var propertyAttribute = member.GetAttributes().FirstOrDefault(attribute =>
+                attribute.AttributeClass?.ToDisplayString() == "Newtonsoft.Json.JsonPropertyAttribute");
+
+            if (propertyAttribute != null)
+            {
+                propertyName = propertyAttribute.NamedArguments.FirstOrDefault(arg => arg.Key == "PropertyName")
+                    .Value.Value?.ToString();
+                
+                if (string.IsNullOrEmpty(propertyName))
+                {
+                    propertyName = propertyAttribute.ConstructorArguments.FirstOrDefault().Value?.ToString();
+                }
+            }
+            
+            if (string.IsNullOrEmpty(propertyName))
+            {
+                propertyName = member.Name;
+            }
+            
             if (member is IPropertySymbol property && !property.IsStatic && property.SetMethod != null)
             {
-                yield return (property.Name, property.Type);
+                yield return (property.Name, property.Type, propertyName);
             }
             else if (member is IFieldSymbol field && !field.IsStatic)
             {
-                var fieldName = field.Name;
-
-                if (!fieldName.EndsWith(">k__BackingField"))
-                {
-                    yield return (fieldName, field.Type);
-                }
+                yield return (field.Name, field.Type, propertyName);
             }
         }
     }

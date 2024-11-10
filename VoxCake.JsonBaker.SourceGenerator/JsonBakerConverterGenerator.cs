@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 
 namespace VoxCake.JsonBaker.SourceGenerator;
@@ -36,17 +37,15 @@ public static class JsonBakerConverterGenerator
 
                 foreach (var member in typeSymbol.GetSerializableMembers())
                 {
-                    var propertyName = member.name;
+                    writer.WriteLine($"writer.WritePropertyName(\"{member.propertyName}\");");
 
-                    writer.WriteLine($"writer.WritePropertyName(nameof(concreteValue.{propertyName}));");
-
-                    if (member.type.IsPrimitiveType())
+                    if (member.memberType.IsPrimitiveType())
                     {
-                        writer.WriteLine($"writer.WriteValue(concreteValue.{propertyName});");
+                        writer.WriteLine($"writer.WriteValue(concreteValue.{member.memberName});");
                     }
                     else
                     {
-                        writer.WriteLine($"serializer.Serialize(writer, concreteValue.{propertyName});");
+                        writer.WriteLine($"serializer.Serialize(writer, concreteValue.{member.memberName});");
                     }
                 }
                 
@@ -70,14 +69,55 @@ public static class JsonBakerConverterGenerator
                     writer.WriteLine("reader.Read();");
                     writer.WriteLine("");
 
+                    // var serializableMembers = typeSymbol.GetSerializableMembers().ToArray();
+                    //
+                    // if (serializableMembers.Length == 1)
+                    // {
+                    //     var singleMember = serializableMembers.First();
+                    //     
+                    //     using (writer.Scope($"if (propertyName == \"{singleMember.propertyName}\"))"))
+                    //     {
+                    //         writer.WriteLine($"value.{singleMember.memberName} = {singleMember.memberType.GetReadValueCode()};");
+                    //     }
+                    //     using (writer.Scope("else"))
+                    //     {
+                    //         writer.WriteLine("reader.Skip();");
+                    //     }
+                    // }
+                    //
+                    // if (serializableMembers.Length > 1)
+                    // {
+                    //     var firstMember = serializableMembers.First();
+                    //     
+                    //     using (writer.Scope($"if (propertyName == \"{firstMember.propertyName}\"))"))
+                    //     {
+                    //         writer.WriteLine($"value.{firstMember.memberName} = {firstMember.memberType.GetReadValueCode()};");
+                    //     }
+                    //
+                    //     for (var i = 1; i < serializableMembers.Length; i++)
+                    //     {
+                    //         var serializableMember = serializableMembers[i];
+                    //         
+                    //         using (writer.Scope($"else if (propertyName == \"{serializableMember.propertyName}\"))"))
+                    //         {
+                    //             writer.WriteLine($"value.{serializableMember.memberName} = {serializableMember.memberType.GetReadValueCode()};");
+                    //         }
+                    //     }
+                    //     
+                    //     using (writer.Scope("else"))
+                    //     {
+                    //         writer.WriteLine("reader.Skip();");
+                    //     }
+                    // }
+                    //
+                    // writer.WriteLine("reader.Read();");
+                    
                     using (writer.Scope("switch (propertyName)"))
                     {
                         foreach (var member in typeSymbol.GetSerializableMembers())
                         {
-                            var readValueCode = member.type.GetReadValueCode();
-                            
-                            writer.WriteLine($"case nameof(value.{member.name}):");
-                            writer.WriteLine($"    value.{member.name} = {readValueCode};");
+                            writer.WriteLine($"case \"{member.propertyName}\":");
+                            writer.WriteLine($"    value.{member.memberName} = {member.memberType.GetReadValueCode()};");
                             writer.WriteLine($"    break;");
                         }
                         
