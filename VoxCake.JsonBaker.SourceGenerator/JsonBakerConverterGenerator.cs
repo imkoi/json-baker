@@ -37,15 +37,34 @@ public static class JsonBakerConverterGenerator
 
                 foreach (var member in typeSymbol.GetSerializableMembers())
                 {
-                    writer.WriteLine($"writer.WritePropertyName(\"{member.propertyName}\");");
-
-                    if (member.memberType.IsPrimitiveType())
+                    if (!member.info.IncludeDefaultValues || !member.info.IncludeNullValues)
                     {
-                        writer.WriteLine($"writer.WriteValue(concreteValue.{member.memberName});");
+                        using (writer.Scope($"if (concreteValue.{member.memberName} != default)"))
+                        {
+                            writer.WriteLine($"writer.WritePropertyName(\"{member.info.PropertyName}\");");
+                        
+                            if (member.memberType.IsPrimitiveType())
+                            {
+                                writer.WriteLine($"writer.WriteValue(concreteValue.{member.memberName});");
+                            }
+                            else
+                            {
+                                writer.WriteLine($"serializer.Serialize(writer, concreteValue.{member.memberName});");
+                            }
+                        }
                     }
                     else
                     {
-                        writer.WriteLine($"serializer.Serialize(writer, concreteValue.{member.memberName});");
+                        writer.WriteLine($"writer.WritePropertyName(\"{member.info.PropertyName}\");");
+                        
+                        if (member.memberType.IsPrimitiveType())
+                        {
+                            writer.WriteLine($"writer.WriteValue(concreteValue.{member.memberName});");
+                        }
+                        else
+                        {
+                            writer.WriteLine($"serializer.Serialize(writer, concreteValue.{member.memberName});");
+                        }
                     }
                 }
                 
@@ -116,7 +135,7 @@ public static class JsonBakerConverterGenerator
                     {
                         foreach (var member in typeSymbol.GetSerializableMembers())
                         {
-                            writer.WriteLine($"case \"{member.propertyName}\":");
+                            writer.WriteLine($"case \"{member.info.PropertyName}\":");
                             writer.WriteLine($"    value.{member.memberName} = {member.memberType.GetReadValueCode()};");
                             writer.WriteLine($"    break;");
                         }

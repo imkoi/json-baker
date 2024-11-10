@@ -50,7 +50,7 @@ public static class TypeSymbolExtensions
         "Uri"
     };
     
-    public static IEnumerable<(string memberName, ITypeSymbol memberType, string propertyName)> GetSerializableMembers(this ITypeSymbol typeSymbol)
+    public static IEnumerable<(string memberName, ITypeSymbol memberType, JsonPropertyInfo info)> GetSerializableMembers(this ITypeSymbol typeSymbol)
     {
         foreach (var member in typeSymbol.GetMembers())
         {
@@ -65,34 +65,15 @@ public static class TypeSymbolExtensions
                 continue;
             }
             
-            var propertyName = string.Empty;
-            
-            var propertyAttribute = member.GetAttributes().FirstOrDefault(attribute =>
-                attribute.AttributeClass?.ToDisplayString() == "Newtonsoft.Json.JsonPropertyAttribute");
-
-            if (propertyAttribute != null)
-            {
-                propertyName = propertyAttribute.NamedArguments.FirstOrDefault(arg => arg.Key == "PropertyName")
-                    .Value.Value?.ToString();
-                
-                if (string.IsNullOrEmpty(propertyName))
-                {
-                    propertyName = propertyAttribute.ConstructorArguments.FirstOrDefault().Value?.ToString();
-                }
-            }
-            
-            if (string.IsNullOrEmpty(propertyName))
-            {
-                propertyName = member.Name;
-            }
+            var propertyInfo = member.GetJsonPropertyInfo();
             
             if (member is IPropertySymbol property && !property.IsStatic && property.SetMethod != null)
             {
-                yield return (property.Name, property.Type, propertyName);
+                yield return (property.Name, property.Type, propertyInfo);
             }
             else if (member is IFieldSymbol field && !field.IsStatic)
             {
-                yield return (field.Name, field.Type, propertyName);
+                yield return (field.Name, field.Type, propertyInfo);
             }
         }
     }
@@ -141,5 +122,59 @@ public static class TypeSymbolExtensions
         var displayString = typeSymbol.ToDisplayString();
 
         return _primitiveTypes.Contains(displayString);
+    }
+
+    public static JsonPropertyInfo GetJsonPropertyInfo(this ISymbol member)
+    {
+        var propertyName = string.Empty;
+        var includeNullValues = true;
+        var includeDefaultValues = true;
+            
+        var propertyAttribute = member.GetAttributes().FirstOrDefault(attribute =>
+            attribute.AttributeClass?.ToDisplayString() == "Newtonsoft.Json.JsonPropertyAttribute");
+
+        if (propertyAttribute != null)
+        {
+            propertyName = propertyAttribute.NamedArguments.FirstOrDefault(arg => arg.Key == "PropertyName")
+                .Value.Value?.ToString();
+
+            var nullValueHandlingAttribute = propertyAttribute.NamedArguments
+                .Where(arg => arg.Key == "NullValueHandling").ToArray();
+
+            if (nullValueHandlingAttribute.Any())
+            {
+                var value = (int?) nullValueHandlingAttribute.First().Value.Value;
+
+                if (value.HasValue)
+                {
+                    includeDefaultValues = value.Value == 0;
+                }
+            }
+                
+            var defaultValueHandlingAttribute = propertyAttribute.NamedArguments
+                .Where(arg => arg.Key == "DefaultValueHandling").ToArray();
+                
+            if (defaultValueHandlingAttribute.Any())
+            {
+                var value = (int?) defaultValueHandlingAttribute.First().Value.Value;
+                
+                if (value.HasValue)
+                {
+                    includeDefaultValues = value.Value == 0;
+                }
+            }
+                
+            if (string.IsNullOrEmpty(propertyName))
+            {
+                propertyName = propertyAttribute.ConstructorArguments.FirstOrDefault().Value?.ToString();
+            }
+        }
+            
+        if (string.IsNullOrEmpty(propertyName))
+        {
+            propertyName = member.Name;
+        }
+
+        return new JsonPropertyInfo(propertyName, includeNullValues, includeDefaultValues);
     }
 }
