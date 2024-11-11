@@ -1,5 +1,5 @@
 # JsonBaker
-[![openupm](https://img.shields.io/npm/v/com.github-glitchenzo.nugetforunity?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.github-glitchenzo.nugetforunity/) ![main github action workflow](https://github.com/GlitchEnzo/NuGetForUnity/actions/workflows/main.yml/badge.svg) [![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![GitHub Release](https://img.shields.io/github/v/release/GlitchEnzo/NuGetForUnity.svg)](https://github.com/GlitchEnzo/NuGetForUnity/releases/latest)
+![main github action workflow](https://github.com/imkoi/json-baker/blob/main/.github/workflows/dotnet.yml/badge.svg) [![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ## What is JsonBaker?
 JsonBaker is library designed tщ boost the performance of Newtonsoft.Json serialization and deserialization. It use Roslyn source generation to create optimized JsonConverter implementations for specific types.
