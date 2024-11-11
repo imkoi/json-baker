@@ -1,6 +1,6 @@
-using System;
+#if !JSON_BAKER_DISABLE_SOURCE_GENERATION
+
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
@@ -42,3 +42,5 @@ public class SampleSourceGenerator : ISourceGenerator
         context.AddSource("JsonBakerAssemblyConverter.g.cs", SourceText.From(generatedCode, Encoding.UTF8));
     }
 }
+
+#endif
