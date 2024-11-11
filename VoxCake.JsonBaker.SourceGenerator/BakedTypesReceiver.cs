@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#if !JSON_BAKER_DISABLE_SOURCE_GENERATION
+
+using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
@@ -115,3 +117,5 @@ public class BakedTypesReceiver : ISyntaxContextReceiver
         }
     }
 }
+
+#endif
