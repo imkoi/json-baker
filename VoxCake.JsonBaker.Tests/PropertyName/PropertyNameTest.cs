@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using FluentAssertions;
 using Newtonsoft.Json;
 
@@ -35,6 +34,7 @@ public class PropertyNameTest
         yield return "Case3.json";
         yield return "Case4.json";
         yield return "Case5.json";
+        yield return "Case6.json";
     }
     
     [JsonBaker]

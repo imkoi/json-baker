@@ -4,8 +4,6 @@ namespace VoxCake.JsonBaker.Tests;
 
 public class TestUtility
 {
-    private const string Ref = "C:/github/json-converter-generator/VoxCake.JsonBaker.Tests/bin/Debug/net6.0";
-
     public static T GetJson<T>(object testObject, string jsonFileName)
     {
         var jsonString = GetJson(testObject, jsonFileName);

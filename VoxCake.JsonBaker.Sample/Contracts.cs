@@ -6,13 +6,11 @@ namespace VoxCake.JsonBaker.Sample
     [JsonBaker]
     public class Product
     {
-        [JsonIgnore]
         public int Id { get; set; }
         public string Name { get; set; }
         public double Price { get; set; }
         public List<Category> Categories { get; set; }
         public Availability Availability { get; set; }
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, DefaultValueHandling = DefaultValueHandling.Ignore)]
         public Specifications Specifications { get; set; }
         public List<Review> Reviews { get; set; }
     }
@@ -21,7 +19,6 @@ namespace VoxCake.JsonBaker.Sample
     public class Category
     {
         public int Id { get; set; }
-        [JsonProperty("name")]
         public string Name { get; set; }
         public List<Subcategory> Subcategories { get; set; }
     }

@@ -18,6 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\VoxCake.JsonBaker.SourceGenerator\VoxCake.JsonBaker.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
       <ProjectReference Include="..\VoxCake.JsonBaker\VoxCake.JsonBaker.csproj" />
     </ItemGroup>
 

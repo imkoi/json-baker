@@ -135,8 +135,22 @@ public static class TypeSymbolExtensions
 
         if (propertyAttribute != null)
         {
-            propertyName = propertyAttribute.NamedArguments.FirstOrDefault(arg => arg.Key == "PropertyName")
-                .Value.Value?.ToString();
+            var propertyNameAttribute = propertyAttribute.NamedArguments
+                .Where(arg => arg.Key == "PropertyName").ToArray();
+
+            if (propertyNameAttribute.Any())
+            {
+                var value = (string?) propertyNameAttribute.First().Value.Value;
+                
+                if (value != null)
+                {
+                    propertyName = value;
+                }
+            }
+            else
+            {
+                propertyName = propertyAttribute.ConstructorArguments.FirstOrDefault().Value?.ToString();
+            }
 
             var nullValueHandlingAttribute = propertyAttribute.NamedArguments
                 .Where(arg => arg.Key == "NullValueHandling").ToArray();
@@ -162,11 +176,6 @@ public static class TypeSymbolExtensions
                 {
                     includeDefaultValues = value.Value == 0;
                 }
-            }
-                
-            if (string.IsNullOrEmpty(propertyName))
-            {
-                propertyName = propertyAttribute.ConstructorArguments.FirstOrDefault().Value?.ToString();
             }
         }
             

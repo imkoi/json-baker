@@ -1,10 +1,11 @@
 using System.Collections.Generic;
+using Microsoft.CodeAnalysis;
 
 namespace VoxCake.JsonBaker.SourceGenerator;
 
 public static class JsonBakerAssemblyConverterProviderGenerator
 {
-    public static void Generate(CodeWriter codeWriter, List<(string typeName, string converterName)> converterNames)
+    public static void Generate(CodeWriter codeWriter, List<(ITypeSymbol type, string converterName)> processedTypes)
     {
         using(codeWriter.Scope("public class JsonBakerAssemblyConverterProvider : JsonBakerAssemblyConverterProviderBase"))
         {
@@ -31,10 +32,10 @@ public static class JsonBakerAssemblyConverterProviderGenerator
                 {
                     var index = 0;
                     
-                    foreach (var converter in converterNames)
+                    foreach (var processedType in processedTypes)
                     {
-                        var inner = $"typeof({converter.typeName}), new {converter.converterName}()";
-                        var endSymbol = index + 1 < converterNames.Count ? "," : "";
+                        var inner = $"typeof({processedType.type.ToDisplayString()}), new {processedType.converterName}()";
+                        var endSymbol = index + 1 < processedTypes.Count ? "," : "";
                         
                         codeWriter.WriteLine("{ " + inner + " }" + endSymbol);
 

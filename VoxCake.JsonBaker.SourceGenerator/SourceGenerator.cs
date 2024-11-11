@@ -26,19 +26,19 @@ public class SampleSourceGenerator : ISourceGenerator
         }
 
         var codeWriter = new CodeWriter(4, "System", "System.Collections.Generic", "Newtonsoft.Json", "VoxCake.JsonBaker");
-        var converterNames = new List<(string typeName, string converterName)>(receiver.SerializableTypes.Count);
+        var converterNames = new List<(ITypeSymbol type, string converterName)>(receiver.SerializableTypes.Count);
         
         foreach (var typeSymbol in receiver.SerializableTypes)
         {
-            var converterName = JsonBakerConverterGenerator.Generate(typeSymbol, codeWriter);
+            var converterName = JsonBakerConverterGenerator.GenerateAndGetConverterName(typeSymbol, codeWriter);
             
-            converterNames.Add(converterName);
+            converterNames.Add((typeSymbol, converterName));
         }
         
         JsonBakerAssemblyConverterProviderGenerator.Generate(codeWriter, converterNames);
         
         var generatedCode = codeWriter.Build();
-        
+
         context.AddSource("JsonBakerAssemblyConverter.g.cs", SourceText.From(generatedCode, Encoding.UTF8));
     }
 }
