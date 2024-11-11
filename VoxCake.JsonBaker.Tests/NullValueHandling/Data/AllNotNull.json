@@ -1,0 +1,5 @@
+{
+  "IncludedProperty": "Included are not null",
+  "IgnoredProperty": "Ignored are not null",
+  "RegularProperty": "This is a regular property"
+}

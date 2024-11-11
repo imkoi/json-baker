@@ -1,0 +1,8 @@
+{
+  "IncludedProperty": 42,
+  "IgnoredProperty": "Default String",
+  "PopulatedStringProperty": "Populated String",
+  "PopulatedProperty": true,
+  "IgnoredAndPopulatedProperty": 3.14,
+  "RegularDateTime": "0001-01-01T00:00:00"
+}
