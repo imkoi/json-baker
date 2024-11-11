@@ -69,71 +69,72 @@ using VoxCake.JsonBaker.Sample;
 
 public class ReviewConverter_Generated : JsonConverter
 {
-	public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-	{
-		Review concreteValue = (Review)value;
-		writer.WriteStartObject();
-		writer.WritePropertyName("User");
-		writer.WriteValue(concreteValue.User);
-		writer.WritePropertyName("Rating");
-		writer.WriteValue(concreteValue.Rating);
-		writer.WritePropertyName("Comment");
-		writer.WriteValue(concreteValue.Comment);
-		writer.WriteEndObject();
-	}
+  public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+  {
+    Review concreteValue = (Review)value;
+    writer.WriteStartObject();
+    writer.WritePropertyName("User");
+    writer.WriteValue(concreteValue.User);
+    writer.WritePropertyName("Rating");
+    writer.WriteValue(concreteValue.Rating);
+    writer.WritePropertyName("Comment");
+    writer.WriteValue(concreteValue.Comment);
+    writer.WriteEndObject();
+  }
 
-	public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-	{
-		if ((int)reader.TokenType == 11)
-		{
-			return null;
-		}
-		Review value = new Review();
-		reader.Read();
-		while ((int)reader.TokenType == 4)
-		{
-			string propertyName = (string)reader.Value;
-			reader.Read();
-			switch (propertyName)
-			{
-			case "User":
-				value.User = (string)reader.Value;
-				break;
-			case "Rating":
-				value.Rating = ((reader.Value != null) ? Convert.ToInt32(reader.Value) : 0);
-				break;
-			case "Comment":
-				value.Comment = (string)reader.Value;
-				break;
-			default:
-				if (propertyName.Equals("User", StringComparison.OrdinalIgnoreCase))
-				{
-					value.User = (string)reader.Value;
-				}
-				else if (propertyName.Equals("Rating", StringComparison.OrdinalIgnoreCase))
-				{
-					value.Rating = ((reader.Value != null) ? Convert.ToInt32(reader.Value) : 0);
-				}
-				else if (propertyName.Equals("Comment", StringComparison.OrdinalIgnoreCase))
-				{
-					value.Comment = (string)reader.Value;
-				}
-				else
-				{
-					reader.Skip();
-				}
-				break;
-			}
-			reader.Read();
-		}
-		return value;
-	}
+  public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+  {
+    if ((int)reader.TokenType == 11)
+    {
+      return null;
+    }
+    Review value = new Review();
+    reader.Read();
+    while ((int)reader.TokenType == 4)
+    {
+      string propertyName = (string)reader.Value;
+      reader.Read();
+      switch (propertyName)
+      {
+        case "User":
+          value.User = (string)reader.Value;
+          break;
+        case "Rating":
+          value.Rating = (reader.Value != null) ? Convert.ToInt32(reader.Value) : 0;
+          break;
+        case "Comment":
+          value.Comment = (string)reader.Value;
+          break;
+        default:
+          if (propertyName.Equals("User", StringComparison.OrdinalIgnoreCase))
+          {
+            value.User = (string)reader.Value;
+          }
+          else if (propertyName.Equals("Rating", StringComparison.OrdinalIgnoreCase))
+          {
+            value.Rating = (reader.Value != null) ? Convert.ToInt32(reader.Value) : 0;
+          }
+          else if (propertyName.Equals("Comment", StringComparison.OrdinalIgnoreCase))
+          {
+            value.Comment = (string)reader.Value;
+          }
+          else
+          {
+            reader.Skip();
+          }
+          break;
+      }
+      reader.Read();
+    }
+    return value;
+  }
 
-	public override bool CanConvert(Type objectType)
-	{
-		return true;
-	}
+  public override bool CanConvert(Type objectType)
+  {
+    return true;
+  }
 }
+
 ```
 
 ### Converter provider per assembly
@@ -146,30 +147,28 @@ using VoxCake.JsonBaker.Sample;
 
 public class JsonBakerAssemblyConverterProvider : JsonBakerAssemblyConverterProviderBase
 {
-	private Dictionary<Type, JsonConverter> _converters;
+  private Dictionary<Type, JsonConverter> _converters;
 
-	private bool _initialized;
+  private bool _initialized;
 
-	public override JsonConverter GetConverter(Type type)
-	{
-		if (!_initialized)
-		{
-			Initialize();
-			_initialized = true;
-		}
-		_converters.TryGetValue(type, out var converter);
-		return converter;
-	}
+  public override JsonConverter GetConverter(Type type)
+  {
+    if (!_initialized)
+    {
+      Initialize();
+      _initialized = true;
+    }
+    _converters.TryGetValue(type, out var converter);
+    return converter;
+  }
 
-	private void Initialize()
-	{
-		_converters = new Dictionary<Type, JsonConverter>(16)
-		{
-			{
-				typeof(Review),
-				(JsonConverter)(object)new ReviewConverter_Generated()
-			}
-		};
-	}
+  private void Initialize()
+  {
+    _converters = new Dictionary<Type, JsonConverter>(16)
+    {
+      { typeof(Review), (JsonConverter)(object)new ReviewConverter_Generated() }
+    };
+  }
 }
+
 ```
