@@ -1,0 +1,8 @@
+{
+  "custom_name": "Value for custom name",
+  "different_case": "Case-sensitive value",
+  "with_special_chars": "Special chars value",
+  "nested_property": "Nested value",
+  "simple_property": "Simple value",
+  "IgnoredProperty": "Should be ignored in tests"
+}

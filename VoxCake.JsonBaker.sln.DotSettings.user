@@ -21,5 +21,7 @@
       &lt;TestId&gt;NUnit3x::BAAC4A9B-6CD7-4178-92FF-4AA53F0233D9::net6.0::VoxCake.JsonBaker.Tests.DefaultValueHandlingTest.Deserialization_GivesEquivalentObjects&lt;/TestId&gt;&#xD;
       &lt;TestId&gt;NUnit3x::BAAC4A9B-6CD7-4178-92FF-4AA53F0233D9::net6.0::VoxCake.JsonBaker.Tests.DefaultValueHandlingTest.Serialization_GivesEquivalentJsons&lt;/TestId&gt;&#xD;
     &lt;/TestAncestor&gt;&#xD;
+    &lt;ProjectFile&gt;BAAC4A9B-6CD7-4178-92FF-4AA53F0233D9/d:PropertyIgnore/f:PropertyIgnoreTest.cs&lt;/ProjectFile&gt;&#xD;
+    &lt;ProjectFile&gt;BAAC4A9B-6CD7-4178-92FF-4AA53F0233D9/d:PropertyName/f:PropertyNameTest.cs&lt;/ProjectFile&gt;&#xD;
   &lt;/Or&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

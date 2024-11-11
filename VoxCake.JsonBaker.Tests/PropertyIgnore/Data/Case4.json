@@ -1,0 +1,6 @@
+{
+  "IgnoredProperty": "Should be ignored",
+  "IgnoredOnBothSides": "Should be ignored",
+  "IgnoredOnSerializationOnly": "Should be ignored on serialization",
+  "IgnoredOnDeserializationOnly": "Should be ignored on deserialization"
+}

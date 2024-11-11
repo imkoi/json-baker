@@ -1,0 +1,7 @@
+{
+  "CUSTOM_NAME": "Uppercase custom name",
+  "DIFFERENT_CASE": "Uppercase case-sensitive value",
+  "WITH_SPECIAL_CHARS": "Uppercase special chars",
+  "NESTED_PROPERTY": "Uppercase nested value",
+  "SIMPLE_PROPERTY": "Uppercase simple value"
+}

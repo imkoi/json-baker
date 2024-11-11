@@ -1,0 +1,4 @@
+{
+  "IncludedProperty": "Included value",
+  "NotIgnoredProperty": "This should not be ignored"
+}

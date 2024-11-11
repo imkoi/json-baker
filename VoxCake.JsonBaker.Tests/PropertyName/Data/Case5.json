@@ -1,0 +1,7 @@
+{
+  "custom_name": "Matched value",
+  "different_case": "Matched case",
+  "with_special_chars": "Matched special chars",
+  "nested_property": "Matched nested property",
+  "simple_property": "Matched simple property"
+}
