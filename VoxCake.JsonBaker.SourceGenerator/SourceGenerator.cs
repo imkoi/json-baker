@@ -25,21 +25,32 @@ public class SampleSourceGenerator : ISourceGenerator
             return;
         }
 
-        var codeWriter = new CodeWriter(4, "System", "System.Collections.Generic", "Newtonsoft.Json", "VoxCake.JsonBaker");
-        var converterNames = new List<(ITypeSymbol type, string converterName)>(receiver.SerializableTypes.Count);
-        
-        foreach (var typeSymbol in receiver.SerializableTypes)
+        try
         {
-            var converterName = JsonBakerConverterGenerator.GenerateAndGetConverterName(typeSymbol, codeWriter);
-            
-            converterNames.Add((typeSymbol, converterName));
-        }
-        
-        JsonBakerAssemblyConverterProviderGenerator.Generate(codeWriter, converterNames);
-        
-        var generatedCode = codeWriter.Build();
+            var codeWriter = new CodeWriter(4, "System", "System.Collections.Generic", "Newtonsoft.Json",
+                "VoxCake.JsonBaker");
+            var converterNames = new List<(ITypeSymbol type, string converterName)>(receiver.SerializableTypes.Count);
 
-        context.AddSource("JsonBakerAssemblyConverter.g.cs", SourceText.From(generatedCode, Encoding.UTF8));
+            foreach (var typeSymbol in receiver.SerializableTypes)
+            {
+                var converterName = JsonBakerConverterGenerator.GenerateAndGetConverterName(typeSymbol, codeWriter);
+
+                converterNames.Add((typeSymbol, converterName));
+            }
+
+            JsonBakerAssemblyConverterProviderGenerator.Generate(codeWriter, converterNames);
+
+            var generatedCode = codeWriter.Build();
+
+            context.AddSource("JsonBakerAssemblyConverter.g.cs", SourceText.From(generatedCode, Encoding.UTF8));
+        }
+        catch (JsonPropertyUnsupportedAttributeException unsupportedAttributeException)
+        {
+            foreach (var unsupportedAttribute in unsupportedAttributeException.UnsupportedAttributes)
+            {
+                context.ReportDiagnostic(Diagnostic.Create(unsupportedAttributeException.Diagnostic, unsupportedAttributeException.Location, unsupportedAttribute.Key));
+            }
+        }
     }
 }
 

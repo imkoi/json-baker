@@ -49,6 +49,12 @@ public static class TypeSymbolExtensions
         "Uri?",
         "Uri"
     };
+
+    private static readonly HashSet<string> _supportedJsonPropertyAttributeParameters = new HashSet<string>()
+    {
+        "PropertyName",
+        "NullValueHandling"
+    };
     
     public static IEnumerable<(string memberName, ITypeSymbol memberType, JsonPropertyInfo info)> GetSerializableMembers(this ITypeSymbol typeSymbol)
     {
@@ -135,6 +141,15 @@ public static class TypeSymbolExtensions
 
         if (propertyAttribute != null)
         {
+            var unsupportedAttributes = propertyAttribute.NamedArguments
+                .Where(arg => !_supportedJsonPropertyAttributeParameters.Contains(arg.Key))
+                .ToArray();
+
+            if (unsupportedAttributes.Length > 0)
+            {
+                throw new JsonPropertyUnsupportedAttributeException(propertyAttribute.ApplicationSyntaxReference.GetSyntax().GetLocation(), unsupportedAttributes);
+            }
+            
             var propertyNameAttribute = propertyAttribute.NamedArguments
                 .Where(arg => arg.Key == "PropertyName").ToArray();
 
