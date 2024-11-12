@@ -2,7 +2,7 @@
 ![main github action workflow](https://github.com/imkoi/json-baker/actions/workflows/dotnet.yml/badge.svg) [![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ## What is JsonBaker?
-JsonBaker is library designed tщ boost the performance of Newtonsoft.Json serialization and deserialization. It use Roslyn source generation to create optimized JsonConverter implementations for specific types.
+JsonBaker is library designed to boost the performance of Newtonsoft.Json serialization and deserialization. It use Roslyn source generation to create optimized JsonConverter implementations for specific types.
 
 Depending on the use case, JsonBaker can enhance the performance of JSON operations by 2 to 8 times, reducing overhead and providing faster, more efficient handling of JSON data.
 

@@ -1,33 +1,33 @@
 ﻿{
   "Id": 12345,
-  "Name": "Продукт",
+  "Name": "Placeholder",
   "Price": 99.99,
   "Categories": [
     {
       "Id": 1,
-      "Name": "Электроника",
+      "Name": "Placeholder",
       "Subcategories": [
         {
           "Id": 10,
-          "Name": "Смартфоны"
+          "Name": "Placeholder"
         },
         {
           "Id": 11,
-          "Name": "Ноутбуки"
+          "Name": "Placeholder"
         }
       ]
     },
     {
       "Id": 2,
-      "Name": "Бытовая техника",
+      "Name": "Placeholder",
       "Subcategories": [
         {
           "Id": 20,
-          "Name": "Холодильники"
+          "Name": "Placeholder"
         },
         {
           "Id": 21,
-          "Name": "Стиральные машины"
+          "Name": "Placeholder placeholder"
         }
       ]
     }
@@ -37,12 +37,12 @@
     "Stores": [
       {
         "Id": 100,
-        "Name": "Магазин на Ленинском",
+        "Name": "Placeholder on placeholder",
         "Stock": 5
       },
       {
         "Id": 101,
-        "Name": "Магазин на Тверской",
+        "Name": "Placeholder on placeholder",
         "Stock": 0
       }
     ]
@@ -62,14 +62,14 @@
   },
   "Reviews": [
     {
-      "User": "Иван Иванов",
+      "User": "Placeholder Placeholder",
       "Rating": 5,
-      "Comment": "Отличный продукт!"
+      "Comment": "Placeholder Placeholder!"
     },
     {
-      "User": "Петр Петров",
+      "User": "Placeholder Placeholder",
       "Rating": 4,
-      "Comment": "Хорошо, но есть недочеты"
+      "Comment": "Placeholder, Placeholder Placeholder Placeholder"
     }
   ]
 }

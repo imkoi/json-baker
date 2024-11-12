@@ -23,83 +23,44 @@ namespace VoxCake.JsonBaker.Sample
             var obj = CreateProduct();
         
             var generatedProductJson = JsonConvert.SerializeObject(obj, JsonBakerSettings.Default);
-            
-            CompareStrings(JToken.Parse(productJson).ToString(), JToken.Parse(generatedProductJson).ToString());
+
+            if (JToken.Parse(productJson).ToString() != JToken.Parse(generatedProductJson).ToString())
+            {
+                throw new Exception("Wrong json");
+            }
             
             var productValue = JsonConvert.DeserializeObject<Product>(productJson);
             
             JsonConvert.PopulateObject(generatedProductJson, productValue, JsonBakerSettings.Default);
         }
-        
-        public static void CompareStrings(string expected, string actual)
-        {
-            if (expected == actual)
-            {
-                return;
-            }
-            else
-            {
-                string difference = GetDifference(expected, actual);
-                throw new Exception($"Строки не совпадают:\n{difference}");
-            }
-        }
-        
-        private static string GetDifference(string expected, string actual)
-        {
-            var diffMessage = new StringBuilder();
-            int minLength = Math.Min(expected.Length, actual.Length);
-
-            for (int i = 0; i < minLength; i++)
-            {
-                if (expected[i] != actual[i])
-                {
-                    diffMessage.AppendLine($"Различие на позиции {i}:");
-                    diffMessage.AppendLine($"Ожидалось: '{expected[i]}'");
-                    diffMessage.AppendLine($"Фактически: '{actual[i]}'");
-                    return diffMessage.ToString();
-                }
-            }
-
-            if (expected.Length != actual.Length)
-            {
-                diffMessage.AppendLine("Строки имеют разную длину.");
-                diffMessage.AppendLine($"Ожидалось длина: {expected.Length}");
-                diffMessage.AppendLine($"Фактически длина: {actual.Length}");
-                return diffMessage.ToString();
-            }
-
-            diffMessage.AppendLine("Строки различаются, но место отличия не найдено.");
-            return diffMessage.ToString();
-        }
-    
 
         private static Product CreateProduct()
         {
             return new Product
             {
                 Id = 12345,
-                Name = "Продукт",
+                Name = "Product",
                 Price = 99.99,
                 Categories = new List<Category>
                 {
                     new Category
                     {
                         Id = 1,
-                        Name = "Электроника",
+                        Name = "Placeholder",
                         Subcategories = new List<Subcategory>
                         {
-                            new Subcategory { Id = 10, Name = "Смартфоны" },
-                            new Subcategory { Id = 11, Name = "Ноутбуки" }
+                            new Subcategory { Id = 10, Name = "Placeholder" },
+                            new Subcategory { Id = 11, Name = "Placeholder" }
                         }
                     },
                     new Category
                     {
                         Id = 2,
-                        Name = "Бытовая техника",
+                        Name = "Placeholder",
                         Subcategories = new List<Subcategory>
                         {
-                            new Subcategory { Id = 20, Name = "Холодильники" },
-                            new Subcategory { Id = 21, Name = "Стиральные машины" }
+                            new Subcategory { Id = 20, Name = "Placeholder" },
+                            new Subcategory { Id = 21, Name = "Placeholder" }
                         }
                     }
                 },
@@ -108,8 +69,8 @@ namespace VoxCake.JsonBaker.Sample
                     Online = true,
                     Stores = new List<Store>
                     {
-                        new Store { Id = 100, Name = "Магазин на Ленинском", Stock = 5 },
-                        new Store { Id = 101, Name = "Магазин на Тверской", Stock = 0 }
+                        new Store { Id = 100, Name = "Placeholder", Stock = 5 },
+                        new Store { Id = 101, Name = "Placeholder", Stock = 0 }
                     }
                 },
                 Specifications = new Specifications
@@ -121,21 +82,21 @@ namespace VoxCake.JsonBaker.Sample
                         Height = 20,
                         Depth = 2
                     },
-                    Features = new List<string> { "Bluetooth", "Wi-Fi", "GPS" }
+                    Features = new List<string> { "Placeholder", "Placeholder", "Placeholder" }
                 },
                 Reviews = new List<Review>
                 {
                     new Review
                     {
-                        User = "Иван Иванов",
+                        User = "Placeholder",
                         Rating = 5,
-                        Comment = "Отличный продукт!"
+                        Comment = "Placeholder!"
                     },
                     new Review
                     {
-                        User = "Петр Петров",
+                        User = "Placeholder",
                         Rating = 4,
-                        Comment = "Хорошо, но есть недочеты"
+                        Comment = "Placeholder, but placeholder!"
                     }
                 }
             };
