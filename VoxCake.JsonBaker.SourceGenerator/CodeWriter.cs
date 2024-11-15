@@ -46,18 +46,18 @@ public class CodeWriter
         _builder.Append(ident).AppendLine(text);
     }
     
-    public void EmptyLine()
+    public void WriteEmptyLine()
     {
         var ident = GetIdent();
         
         _builder.AppendLine(ident);
     }
 
-    public IDisposable Scope(string code, string? afterScopeCode = default)
+    public IDisposable Scope(string code, string? afterScopeCode = default, bool placeEmptyLineAfterScope = true)
     {
         EnsureEmptyLineAfterScope();
         
-        return new CodeScope(this, code, afterScopeCode);
+        return new CodeScope(this, code, afterScopeCode, placeEmptyLineAfterScope);
     }
 
     public void AddIdent()
@@ -77,16 +77,19 @@ public class CodeWriter
         return result;
     }
     
-    public void NotifyScopeClosed()
+    public void NotifyScopeClosed(bool placeEmptyLineAfterScope)
     {
-        _previousScopeJustClosed = true;
+        if (placeEmptyLineAfterScope)
+        {
+            _previousScopeJustClosed = true;
+        }
     }
 
     private void EnsureEmptyLineAfterScope()
     {
         if (_previousScopeJustClosed)
         {
-            EmptyLine();
+            WriteEmptyLine();
             _previousScopeJustClosed = false;
         }
     }
@@ -107,12 +110,14 @@ public class CodeScope : IDisposable
 {
     private readonly CodeWriter _writer;
     private readonly string? _afterScopeCode;
+    private readonly bool _placeEmptyLineAfterScope;
 
-    public CodeScope(CodeWriter writer, string code, string? afterScopeCode)
+    public CodeScope(CodeWriter writer, string code, string? afterScopeCode, bool placeEmptyLineAfterScope)
     {
         _writer = writer;
         _afterScopeCode = afterScopeCode;
-        
+        _placeEmptyLineAfterScope = placeEmptyLineAfterScope;
+
         _writer.WriteLine(code, false);
         _writer.WriteLine("{", false);
         
@@ -132,6 +137,32 @@ public class CodeScope : IDisposable
             _writer.Write("}" + _afterScopeCode + "\n", false);
         }
 
-        _writer.NotifyScopeClosed();
+        _writer.NotifyScopeClosed(_placeEmptyLineAfterScope);
+    }
+}
+
+public class CompositeScope : IDisposable
+{
+    private readonly IDisposable[] _scopes;
+
+    public CompositeScope(params IDisposable[] scopes)
+    {
+        _scopes = scopes;
+    }
+    
+    public void Dispose()
+    {
+        for (var i = _scopes.Length - 1; i >= 0; i--)
+        {
+            _scopes[i].Dispose();
+        }
+    }
+}
+
+public class EmptyScope : IDisposable
+{
+    public void Dispose()
+    {
+        
     }
 }

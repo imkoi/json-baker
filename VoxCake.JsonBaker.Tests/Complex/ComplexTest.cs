@@ -1,7 +1,37 @@
-﻿using System.Collections.Generic;
+using FluentAssertions;
+using Newtonsoft.Json;
 
-namespace VoxCake.JsonBaker.Sample
+namespace VoxCake.JsonBaker.Tests;
+
+public class ComplexTest
 {
+    [TestCaseSource(nameof(GetTestData))]
+    public void Deserialization_GivesEquivalentObjects(string jsonName)
+    {
+        var referenceJson = TestUtility.GetJson(this, jsonName);
+        
+        var referenceObject = JsonConvert.DeserializeObject<Product>(referenceJson);
+        var resultObject = JsonConvert.DeserializeObject<Product>(referenceJson, JsonBakerSettings.Default);
+
+        referenceObject.Should().BeEquivalentTo(resultObject);
+    }
+    
+    [TestCaseSource(nameof(GetTestData))]
+    public void Serialization_GivesEquivalentJsons(string jsonName)
+    {
+        var referenceObject = TestUtility.GetJson<Product>(this, jsonName);
+        
+        var referenceJson = JsonConvert.SerializeObject(referenceObject);
+        var resultJson = JsonConvert.SerializeObject(referenceObject, JsonBakerSettings.Default);
+
+        referenceJson.Should().BeEquivalentTo(resultJson);
+    }
+
+    private static IEnumerable<string> GetTestData()
+    {
+        yield return "SerializedContract.json";
+    }
+    
     [JsonBaker]
     public class Product
     {

@@ -84,43 +84,63 @@ public static class TypeSymbolExtensions
         }
     }
     
-    public static string GetReadValueCode(this ITypeSymbol typeSymbol)
+    public static string GetReadValueCode(this JsonSerializableMemberInfo member)
     {
-        if (typeSymbol.IsPrimitiveType())
+        var value = string.Empty;
+        
+        var memberType = member.MemberType;
+        
+        if (memberType.IsPrimitiveType())
         {
-            var typeName = typeSymbol.ToDisplayString();
+            var typeName = memberType.ToDisplayString();
 
             switch (typeName)
             {
                 case "string":
                 case "string?":
-                    return "(string)reader.Value";
+                    value = "(string)reader.Value";
+                    break;
                 case "int":
                 case "int?":
-                    return "reader.Value != null ? Convert.ToInt32(reader.Value) : default";
+                    value = "reader.Value != null ? Convert.ToInt32(reader.Value) : default";
+                    break;
                 case "long":
                 case "long?":
-                    return "reader.Value != null ? Convert.ToInt64(reader.Value) : default";
+                    value = "reader.Value != null ? Convert.ToInt64(reader.Value) : default";
+                    break;
                 case "float":
                 case "float?":
-                    return "reader.Value != null ? Convert.ToSingle(reader.Value) : default";
+                    value = "reader.Value != null ? Convert.ToSingle(reader.Value) : default";
+                    break;
                 case "double":
                 case "double?":
-                    return "reader.Value != null ? Convert.ToDouble(reader.Value) : default";
+                    value = "reader.Value != null ? Convert.ToDouble(reader.Value) : default";
+                    break;
                 case "bool":
                 case "bool?":
-                    return "reader.Value != null ? Convert.ToBoolean(reader.Value) : default";
+                    value = "reader.Value != null ? Convert.ToBoolean(reader.Value) : default";
+                    break;
                 case "DateTime":
                 case "DateTime?":
-                    return "reader.Value != null ? Convert.ToDateTime(reader.Value) : default";
+                    value = "reader.Value != null ? Convert.ToDateTime(reader.Value) : default";
+                    break;
                 default:
-                    return $"({typeName})reader.Value";
+                    value = $"({typeName})reader.Value";
+                    break;
             }
         }
-        else
+        else if (member.Info.HasBakeAttribute)
         {
-            return $"serializer.Deserialize<{typeSymbol.ToDisplayString()}>(reader)";
+            var castType = member.Info.ElementType ?? member.MemberType;
+                                    
+            value = $"({castType.ToDisplayString()})" + member.MemberName + $"_JsonConverter.ReadJson(reader, typeof({castType.ToDisplayString()}), existingValue, serializer)";
         }
+        else 
+        {
+            value = $"serializer.Deserialize<{memberType.ToDisplayString()}>(reader)";
+        }
+
+        return value;
     }
 
     public static bool IsPrimitiveType(this ITypeSymbol typeSymbol)
@@ -130,12 +150,29 @@ public static class TypeSymbolExtensions
         return _primitiveTypes.Contains(displayString);
     }
 
-    public static JsonPropertyInfo GetJsonPropertyInfo(this ISymbol member)
+    public static JsonPropertyInfo? GetJsonPropertyInfo(this ISymbol member)
     {
         var propertyName = string.Empty;
         var includeNullValues = true;
         var includeDefaultValues = true;
-            
+
+        var memberType = default(ITypeSymbol);
+
+        if (member is IPropertySymbol property)
+        {
+            memberType = property.Type;
+        }
+
+        if (member is IFieldSymbol field)
+        {
+            memberType = field.Type;
+        }
+
+        if (memberType == null)
+        {
+            return null;
+        }
+
         var propertyAttribute = member.GetAttributes().FirstOrDefault(attribute =>
             attribute.AttributeClass?.ToDisplayString() == "Newtonsoft.Json.JsonPropertyAttribute");
 
@@ -199,6 +236,21 @@ public static class TypeSymbolExtensions
             propertyName = member.Name;
         }
 
-        return new JsonPropertyInfo(propertyName, includeNullValues, includeDefaultValues);
+        var isBaked = memberType.GetAttributes().Any(attr =>
+            attr.AttributeClass?.ToDisplayString() == "VoxCake.JsonBaker.JsonBakerAttribute");
+        
+        var ienumerableType = memberType.AllInterfaces.FirstOrDefault(t => t.ToDisplayString().Contains("ICollection"));
+        var elementType = default(ITypeSymbol);
+                    
+        if (ienumerableType != null)
+        {
+            var collectionTypeSymbol = (INamedTypeSymbol) memberType;
+            elementType = collectionTypeSymbol.TypeArguments.FirstOrDefault();
+            
+            isBaked = elementType.GetAttributes().Any(attr =>
+                attr.AttributeClass?.ToDisplayString() == "VoxCake.JsonBaker.JsonBakerAttribute");
+        }
+
+        return new JsonPropertyInfo(propertyName, includeNullValues, includeDefaultValues, ienumerableType != null, elementType, isBaked);
     }
 }

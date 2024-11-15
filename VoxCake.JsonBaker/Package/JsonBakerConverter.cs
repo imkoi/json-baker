@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace VoxCake.JsonBaker
 {
-    internal class JsonBakerConverter : JsonConverter
+    internal class JsonBakerConverter : JsonConverter, IJsonBakerConverterResolver
     {
         private readonly Action<string> _warningCallback;
         private readonly Dictionary<Type, JsonConverter> _converters = new Dictionary<Type, JsonConverter>(128);
@@ -30,6 +30,15 @@ namespace VoxCake.JsonBaker
         public void ExcludeType(Type type)
         {
             _converters.Add(type, null);
+        }
+
+        public bool TryGetConcreteConverter(Type type, out JsonConverter converter)
+        {
+            CanConvert(type);
+            
+            converter = _converters[type];
+
+            return converter != null;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -68,6 +77,8 @@ namespace VoxCake.JsonBaker
                     }
                     
                     _converterProviders[typeAssembly] = converterProvider;
+                    
+                    converterProvider?.Initialize(this);
                 }
                 
                 if (converterProvider != null)

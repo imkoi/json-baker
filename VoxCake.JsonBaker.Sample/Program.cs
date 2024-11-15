@@ -24,14 +24,18 @@ namespace VoxCake.JsonBaker.Sample
         
             var generatedProductJson = JsonConvert.SerializeObject(obj, JsonBakerSettings.Default);
 
-            if (JToken.Parse(productJson).ToString() != JToken.Parse(generatedProductJson).ToString())
+            var compRefJson = JToken.Parse(productJson).ToString();
+            var compGenJson = JToken.Parse(generatedProductJson).ToString();
+            
+            if (compRefJson != compGenJson)
             {
                 throw new Exception("Wrong json");
             }
             
-            var productValue = JsonConvert.DeserializeObject<Product>(productJson);
-            
-            JsonConvert.PopulateObject(generatedProductJson, productValue, JsonBakerSettings.Default);
+            var compRef = JsonConvert.DeserializeObject<Product>(productJson);
+            var compGen = JsonConvert.DeserializeObject<Product>(productJson, JsonBakerSettings.Default);
+
+            JsonConvert.PopulateObject(generatedProductJson, compGen, JsonBakerSettings.Default);
         }
 
         private static Product CreateProduct()

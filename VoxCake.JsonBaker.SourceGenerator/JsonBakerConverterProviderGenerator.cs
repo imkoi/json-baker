@@ -9,38 +9,36 @@ public static class JsonBakerAssemblyConverterProviderGenerator
     {
         using(codeWriter.Scope("public class JsonBakerAssemblyConverterProvider : JsonBakerAssemblyConverterProviderBase"))
         {
-            codeWriter.WriteLine("private Dictionary<Type, JsonConverter> _converters;");
-            codeWriter.WriteLine("private bool _initialized;");
-            codeWriter.EmptyLine();
+            codeWriter.WriteLine("private Dictionary<Type, JsonBakerConcreteJsonConverterBase> _converters;");
+            codeWriter.WriteEmptyLine();
             
             using(codeWriter.Scope("public override JsonConverter GetConverter(Type type)"))
             {
-                using (codeWriter.Scope("if (!_initialized)"))
-                {
-                    codeWriter.WriteLine("Initialize();");
-                    codeWriter.WriteLine("_initialized = true;");
-                }
-
                 codeWriter.WriteLine("_converters.TryGetValue(type, out var converter);");
                 
                 codeWriter.WriteLine("return converter;");
             }
             
-            using(codeWriter.Scope("private void Initialize()"))
+            using(codeWriter.Scope("public override void Initialize(VoxCake.JsonBaker.IJsonBakerConverterResolver converterResolver)"))
             {
-                using (codeWriter.Scope("_converters = new Dictionary<Type, JsonConverter>(16)", ";"))
+                using (codeWriter.Scope("_converters = new Dictionary<Type, JsonBakerConcreteJsonConverterBase>(16)", ";"))
                 {
                     var index = 0;
                     
                     foreach (var processedType in processedTypes)
                     {
-                        var inner = $"typeof({processedType.type.ToDisplayString()}), new {processedType.converterName}()";
+                        var inner = $"typeof({processedType.type.ToDisplayString()}), new {processedType.converterName}(converterResolver)";
                         var endSymbol = index + 1 < processedTypes.Count ? "," : "";
                         
                         codeWriter.WriteLine("{ " + inner + " }" + endSymbol);
 
                         index++;
                     }
+                }
+
+                using (codeWriter.Scope("foreach(var converterPair in _converters)"))
+                {
+                    codeWriter.WriteLine("converterPair.Value.Initialize();");
                 }
             }
         }
