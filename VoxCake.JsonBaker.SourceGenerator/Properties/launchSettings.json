@@ -3,7 +3,7 @@
   "profiles": {
     "DebugRoslynSourceGenerator": {
       "commandName": "DebugRoslynComponent",
-      "targetProject": "../VoxCake.JsonBaker.Sample/VoxCake.JsonBaker.Sample.csproj"
+      "targetProject": "../VoxCake.JsonBaker.Tests/VoxCake.JsonBaker.Tests.csproj"
     }
   }
 }

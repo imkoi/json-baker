@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace VoxCake.JsonBaker.Tests;
 
-public class NullValueHandlingTest
+public class CollectionsTest
 {
     [TestCaseSource(nameof(GetTestData))]
     public void Deserialization_GivesEquivalentObjects(string jsonName)
@@ -29,27 +29,25 @@ public class NullValueHandlingTest
 
     private static IEnumerable<string> GetTestData()
     {
-        yield return "Empty.json";
+        yield return "AllDefaults.json";
         yield return "AllNotNull.json";
-        
-        yield return "IncludedAndIgnoredAreNull.json";
-        yield return "IncludedAreNull.json";
-        yield return "IgnoredAreNull.json";
-        
-        yield return "IncludedAndIgnoredAreEmpty.json";
-        yield return "IncludedAreEmpty.json";
-        yield return "IgnoredAreEmpty.json";
+        yield return "AllNulls.json";
+        yield return "Empty.json";
+        yield return "IgnoredOnly.json";
+        yield return "IncludedOnly.json";
+        yield return "MissingProperties.json";
+        yield return "PopulatedOnly.json";
     }
     
     [JsonBaker]
     public class TestObject
     {
-        [JsonProperty(NullValueHandling = NullValueHandling.Include)]
-        public string IncludedProperty { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string IgnoredProperty { get; set; }
-
-        public string RegularProperty { get; set; }
+        public List<string> List { get; set; }
+        public LinkedList<string> LinkedListProperty { get; set; }
+        public Stack<string> StackProperty { get; set; }
+        public Queue<string> Queue { get; set; }
+        public HashSet<string> Hashset { get; set; }
+        public Dictionary<string, string> Dictionary { get; set; }
+        public string[] Array { get; set; }
     }
 }

@@ -1,0 +1,6 @@
+{
+  "List": ["item1", "item2"],
+  "Dictionary": {
+    "key": "value"
+  }
+}

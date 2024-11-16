@@ -1,0 +1,12 @@
+{
+  "List": ["item1", "item2"],
+  "LinkedListProperty": ["item1", "item2"],
+  "StackProperty": ["item1", "item2"],
+  "Queue": ["item1", "item2"],
+  "Hashset": ["item1", "item2"],
+  "Dictionary": {
+    "key1": "value1",
+    "key2": "value2"
+  },
+  "Array": ["item1", "item2"]
+}

@@ -13,7 +13,7 @@ public class PropertyIgnoreTest
         var referenceObject = JsonConvert.DeserializeObject<TestObject>(referenceJson);
         var resultObject = JsonConvert.DeserializeObject<TestObject>(referenceJson, JsonBakerSettings.Default);
 
-        referenceObject.Should().BeEquivalentTo(resultObject);
+        resultObject.Should().BeEquivalentTo(referenceObject);
     }
     
     [TestCaseSource(nameof(GetTestData))]
@@ -24,7 +24,7 @@ public class PropertyIgnoreTest
         var referenceJson = JsonConvert.SerializeObject(referenceObject);
         var resultJson = JsonConvert.SerializeObject(referenceObject, JsonBakerSettings.Default);
 
-        referenceJson.Should().BeEquivalentTo(resultJson);
+        resultJson.Should().BeEquivalentTo(referenceJson);
     }
 
     private static IEnumerable<string> GetTestData()

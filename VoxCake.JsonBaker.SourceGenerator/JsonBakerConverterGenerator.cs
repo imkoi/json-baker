@@ -72,32 +72,92 @@ public static class JsonBakerConverterGenerator
                         var targetVariableName = $"concreteValue.{member.MemberName}";
                         IDisposable defaultCheckScope = new EmptyScope();
 
-                        if (!member.Info.IncludeDefaultValues || !member.Info.IncludeNullValues)
+                        var defaultCheckScopeCode = string.Empty;
+                        var defaultValueHandling = member.Info.DefaultValueHandling;
+                        
+                        if (defaultValueHandling != null)
                         {
-                            defaultCheckScope = writer.Scope($"if (concreteValue.{member.MemberName} != default)");
+                            if (defaultValueHandling.Type ==
+                                JsonDefaultValueHandling.HandlingType.Include)
+                            {
+                                defaultCheckScopeCode = $"if (concreteValue.{member.MemberName} != {defaultValueHandling.Value})";
+                            }
+                            else if (defaultValueHandling.Type ==
+                                     JsonDefaultValueHandling.HandlingType.Ignore)
+                            {
+                                defaultCheckScopeCode = "if (false)";
+                            }
+                            else
+                            {
+                                defaultCheckScopeCode = $"if (concreteValue.{member.MemberName} != {defaultValueHandling.Value})";
+                            }
+                        }
+                        
+                        if (!member.Info.IncludeNullValues)
+                        {
+                            defaultCheckScopeCode = $"if (concreteValue.{member.MemberName} != default)";
+                        }
+
+                        if (!string.IsNullOrEmpty(defaultCheckScopeCode))
+                        {
+                            defaultCheckScope = writer.Scope(defaultCheckScopeCode);
                         }
 
                         using (defaultCheckScope)
                         {
                             writer.WriteLine($"writer.WritePropertyName(\"{member.Info.PropertyName}\");");
-
-                            IDisposable foreachScope = new EmptyScope();
-
+                            
                             if (member.Info.IsCollection)
                             {
-                                writer.WriteLine("writer.WriteStartArray();");
+                                using (writer.Scope($"if (concreteValue.{member.MemberName} != null)", placeEmptyLineAfterScope: false))
+                                {
+                                    if (member.MemberType.Name.Contains("Dictionary"))
+                                    {
+                                        writer.WriteLine("writer.WriteStartObject();");
+                                    }
+                                    else
+                                    {
+                                        writer.WriteLine("writer.WriteStartArray();");
+                                    }
+                                    
+                                    targetVariableName = "element";
 
-                                foreachScope = writer.Scope(
-                                        $"foreach (var element in concreteValue.{member.MemberName})",
-                                        placeEmptyLineAfterScope: false);
-                                targetVariableName = "element";
+                                    using (writer.Scope(
+                                               $"foreach (var element in concreteValue.{member.MemberName})",
+                                               placeEmptyLineAfterScope: false))
+                                    {
+                                        WriteToJson();
+                                    }
+                                    
+                                    if (member.MemberType.Name.Contains("Dictionary"))
+                                    {
+                                        writer.WriteLine("writer.WriteEndObject();");
+                                    }
+                                    else
+                                    {
+                                        writer.WriteLine("writer.WriteEndArray();");
+                                    }
+                                }
+                                using (writer.Scope("else"))
+                                {
+                                    writer.WriteLine("writer.WriteNull();");
+                                }
                             }
-
-                            using (foreachScope)
+                            else
+                            {
+                                WriteToJson();
+                            }
+                            
+                            void WriteToJson()
                             {
                                 if (member.MemberType.IsPrimitiveType())
                                 {
                                     writer.WriteLine($"writer.WriteValue({targetVariableName});");
+                                }
+                                else if (member.MemberType.Name.Contains("Dictionary"))
+                                {
+                                    writer.WriteLine($"writer.WritePropertyName({targetVariableName}.Key);");
+                                    writer.WriteLine($"writer.WriteValue({targetVariableName}.Value);");
                                 }
                                 else if (member.Info.HasBakeAttribute)
                                 {
@@ -108,11 +168,6 @@ public static class JsonBakerConverterGenerator
                                 {
                                     writer.WriteLine($"serializer.Serialize(writer, {targetVariableName});");
                                 }
-                            }
-
-                            if (member.Info.IsCollection)
-                            {
-                                writer.WriteLine("writer.WriteEndArray();");
                             }
                         }
 
@@ -264,6 +319,7 @@ public static class JsonBakerConverterGenerator
     private static void WriteReadProperty(CodeWriter writer, JsonSerializableMemberInfo member)
     {
         var value = member.GetReadValueCode();
+        var defaultValueHandling = member.Info.DefaultValueHandling;
         
         if (member.Info.HasBakeAttribute && member.Info.IsCollection)
         {
@@ -287,6 +343,54 @@ public static class JsonBakerConverterGenerator
             }
         }
         
-        writer.WriteLine($"value.{member.MemberName} = {value};");
+        if (defaultValueHandling == null)
+        {
+            writer.WriteLine($"value.{member.MemberName} = {value};");
+
+            return;
+        }
+        
+        writer.WriteLine($"var val = {value};");
+        
+        // if (defaultValueHandling.Type == JsonDefaultValueHandling.HandlingType.IgnoreAndPopulate)
+        // {
+        //     using(writer.Scope($"if (val == {defaultValueHandling.Value})"))
+        //     {
+        //         writer.WriteLine($"value.{member.MemberName} = {defaultValueHandling.Value};");
+        //     }
+        //     using(writer.Scope("else"))
+        //     {
+        //         writer.WriteLine($"value.{member.MemberName} = val;");
+        //     }
+        //     
+        //     return;
+        // }
+        
+        if (defaultValueHandling.Type == JsonDefaultValueHandling.HandlingType.Ignore)
+        {
+            using(writer.Scope($"if (val == {defaultValueHandling.Value})"))
+            {
+                writer.WriteLine("reader.Skip();");
+            }
+            using(writer.Scope("else"))
+            {
+                writer.WriteLine($"value.{member.MemberName} = val;");
+            }
+        }
+        else if (defaultValueHandling.Type == JsonDefaultValueHandling.HandlingType.Populate)
+        {
+            using(writer.Scope($"if (val == {defaultValueHandling.Value})"))
+            {
+                writer.WriteLine($"value.{member.MemberName} = {defaultValueHandling.Value};");
+            }
+            using(writer.Scope("else"))
+            {
+                writer.WriteLine($"value.{member.MemberName} = val;");
+            }
+        }
+        else
+        {
+            writer.WriteLine($"value.{member.MemberName} = val;");
+        }
     }
 }

@@ -13,7 +13,7 @@ public class ComplexTest
         var referenceObject = JsonConvert.DeserializeObject<Product>(referenceJson);
         var resultObject = JsonConvert.DeserializeObject<Product>(referenceJson, JsonBakerSettings.Default);
 
-        referenceObject.Should().BeEquivalentTo(resultObject);
+        resultObject.Should().BeEquivalentTo(referenceObject);
     }
     
     [TestCaseSource(nameof(GetTestData))]
@@ -24,7 +24,7 @@ public class ComplexTest
         var referenceJson = JsonConvert.SerializeObject(referenceObject);
         var resultJson = JsonConvert.SerializeObject(referenceObject, JsonBakerSettings.Default);
 
-        referenceJson.Should().BeEquivalentTo(resultJson);
+        resultJson.Should().BeEquivalentTo(referenceJson);
     }
 
     private static IEnumerable<string> GetTestData()

@@ -53,7 +53,8 @@ public static class TypeSymbolExtensions
     private static readonly HashSet<string> _supportedJsonPropertyAttributeParameters = new HashSet<string>()
     {
         "PropertyName",
-        "NullValueHandling"
+        "NullValueHandling",
+        "DefaultValueHandling"
     };
     
     public static IEnumerable<(string memberName, ITypeSymbol memberType, JsonPropertyInfo info)> GetSerializableMembers(this ITypeSymbol typeSymbol)
@@ -154,7 +155,6 @@ public static class TypeSymbolExtensions
     {
         var propertyName = string.Empty;
         var includeNullValues = true;
-        var includeDefaultValues = true;
 
         var memberType = default(ITypeSymbol);
 
@@ -175,6 +175,8 @@ public static class TypeSymbolExtensions
 
         var propertyAttribute = member.GetAttributes().FirstOrDefault(attribute =>
             attribute.AttributeClass?.ToDisplayString() == "Newtonsoft.Json.JsonPropertyAttribute");
+        
+        var defaultValueHandling = default(JsonDefaultValueHandling);
 
         if (propertyAttribute != null)
         {
@@ -213,21 +215,49 @@ public static class TypeSymbolExtensions
 
                 if (value.HasValue)
                 {
-                    includeDefaultValues = value.Value == 0;
+                    includeNullValues = value.Value == 0;
                 }
             }
                 
             var defaultValueHandlingAttribute = propertyAttribute.NamedArguments
                 .Where(arg => arg.Key == "DefaultValueHandling").ToArray();
-                
+
             if (defaultValueHandlingAttribute.Any())
             {
-                var value = (int?) defaultValueHandlingAttribute.First().Value.Value;
+                var defaultValueAttribute = member.GetAttributes().FirstOrDefault(attribute =>
+                    attribute.AttributeClass?.ToDisplayString() == "System.ComponentModel.DefaultValueAttribute");
+                var handlingType = JsonDefaultValueHandling.HandlingType.Include;
+                var defaultValue = "default";
                 
+                if (defaultValueAttribute.ConstructorArguments.Any())
+                {
+                    var defaultValueType = defaultValueAttribute.ConstructorArguments.First();
+                    
+                    defaultValue = defaultValueType.Value.ToString();
+
+                    if (defaultValueType.Type.Name.Contains("String"))
+                    {
+                        defaultValue = $"\"{defaultValue}\"";
+                    }
+                    else if (defaultValueType.Type.Name.Contains("Boolean"))
+                    {
+                        defaultValue = ((string)defaultValue).ToLower();
+                    }
+                    else if (defaultValueType.Type.Name.Contains("Single") ||
+                             defaultValueType.Type.Name.Contains("Double"))
+                    {
+                        defaultValue = ((string)defaultValue).Replace(",", ".");
+                    }
+                }
+
+                var value = (int?)defaultValueHandlingAttribute.First().Value.Value;
+
                 if (value.HasValue)
                 {
-                    includeDefaultValues = value.Value == 0;
+                    handlingType = (JsonDefaultValueHandling.HandlingType)value.Value;
                 }
+
+                defaultValueHandling = new JsonDefaultValueHandling(handlingType, defaultValue);
             }
         }
             
@@ -244,13 +274,15 @@ public static class TypeSymbolExtensions
                     
         if (ienumerableType != null)
         {
-            var collectionTypeSymbol = (INamedTypeSymbol) memberType;
-            elementType = collectionTypeSymbol.TypeArguments.FirstOrDefault();
+            if (memberType is INamedTypeSymbol namedTypeSymbol)
+            {
+                elementType = namedTypeSymbol.TypeArguments.FirstOrDefault();
             
-            isBaked = elementType.GetAttributes().Any(attr =>
-                attr.AttributeClass?.ToDisplayString() == "VoxCake.JsonBaker.JsonBakerAttribute");
+                isBaked = elementType.GetAttributes().Any(attr =>
+                    attr.AttributeClass?.ToDisplayString() == "VoxCake.JsonBaker.JsonBakerAttribute");
+            }
         }
 
-        return new JsonPropertyInfo(propertyName, includeNullValues, includeDefaultValues, ienumerableType != null, elementType, isBaked);
+        return new JsonPropertyInfo(propertyName, includeNullValues, ienumerableType != null, elementType, isBaked, defaultValueHandling);
     }
 }
